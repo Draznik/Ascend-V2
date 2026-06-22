@@ -2299,7 +2299,6 @@ function renderHabitsPage() {
                 ${orbits}
             </div>`;
     }
-    }
 
     const unEl = document.getElementById('habit-username');
     if (unEl) unEl.textContent = gameState.username || 'Hero';
@@ -6696,19 +6695,17 @@ function creatureSVG() {
 }
 
 function creatureSVGStage1(state) {
-    // V2.2: use real image if available in /images/ folder (added by user),
-    // fallback to SVG for environments where the image isn't deployed yet.
-    const imgPath = 'images/wolf_stage1.jpg';
+    // V2.2: Display PNG louveteau (transparent background)
+    const imgPath = 'images/wolf_stage1.png';
     const stateClass = `creature-img-wrap creature-${state}`;
     const eyeOverlay = state === 'sleeping'
         ? '<div class="creature-img-overlay-sleep">😴</div>'
         : state === 'radiant'
         ? '<div class="creature-img-overlay-glow creature-aura-ring"></div>'
         : '';
+    
     return `<div class="${stateClass}">
-        <img src="${imgPath}" alt="Louveteau"
-             class="creature-img creature-img-stage1"
-             onerror="this.parentElement.innerHTML=\`${creatureSVGStage1Fallback(state).replace(/`/g,"'")}\`"/>
+        <img src="${imgPath}" alt="Louveteau" class="creature-img creature-img-stage1"/>
         ${eyeOverlay}
     </div>`;
 }
