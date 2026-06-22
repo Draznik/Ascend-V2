@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Ascend V2.0</title>
+    <title>Ascend V2.1</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-512.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ascend">
     <meta name="theme-color" content="#070912">
-    <link rel="stylesheet" href="style.css?v=2.0">
+    <link rel="stylesheet" href="style.css?v=2.1">
 </head>
 <body>
 
@@ -155,7 +155,7 @@
         <div class="camp-subtab-row">
             <button class="camp-subtab active" data-subtab="boss" onclick="switchCampSubtab('boss')">⚔️ Boss</button>
             <button class="camp-subtab" data-subtab="quetes" onclick="switchCampSubtab('quetes')">🗡️ Quêtes</button>
-            <button class="camp-subtab" data-subtab="equip" onclick="switchCampSubtab('equip')">🛡️ Équipement</button>
+            
         </div>
         <div id="camp-content"></div>
     </div>
@@ -190,6 +190,8 @@
 
             <!-- V10.0b: global session time counter -->
             <div id="profil-session-stats"></div>
+            <!-- V2.1: Éclat collection -->
+            <div id="profil-eclat-section"></div>
             <div class="section-title" style="margin-top:16px;">💭 Humeur</div>
             <div id="profil-mood-section"></div>
             <!-- V9.2: correlation view (mood × activity) -->
@@ -223,6 +225,6 @@
     </button>
 </nav>
 
-<script src="app.js?v=2.0"></script>
+<script src="app.js?v=2.1"></script>
 </body>
 </html>

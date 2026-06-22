@@ -55,7 +55,7 @@ const STORAGE_KEY = 'lifeRPGState_v3';
 // ─────────────────────────────────────────────
 //  V5 CONSTANTS (must be before loadGameState)
 // ─────────────────────────────────────────────
-const APP_VERSION = 'V2.0';
+const APP_VERSION = 'V2.1';
 
 const TITLES_BY_SKILL = {
     serenite:   [
@@ -111,27 +111,46 @@ const CAMPAIGN_TITLES = [
 // ─────────────────────────────────────────────
 //  V5.3 — CAMPAIGN CONSTANTS
 // ─────────────────────────────────────────────
-const RARITY_ORDER = ['fer','bronze','argent','or','platine','emeraude','diamant','legendaire','mythique','celeste'];
-const RARITY_CONFIG = {
-    fer:        { label:'Fer',        color:'#9ca3af', boost:2,  css:'rarity-fer'        },
-    bronze:     { label:'Bronze',     color:'#d97706', boost:5,  css:'rarity-bronze'     },
-    argent:     { label:'Argent',     color:'#cbd5e1', boost:9,  css:'rarity-argent'     },
-    or:         { label:'Or',         color:'#f5c842', boost:14, css:'rarity-or'         },
-    platine:    { label:'Platine',    color:'#bae6fd', boost:20, css:'rarity-platine'    },
-    emeraude:   { label:'Émeraude',   color:'#34d399', boost:28, css:'rarity-emeraude'   },
-    diamant:    { label:'Diamant',    color:'#22d3ee', boost:38, css:'rarity-diamant'    },
-    legendaire: { label:'Légendaire', color:'#f97316', boost:50, css:'rarity-legendaire' },
-    mythique:   { label:'Mythique',   color:'#ef4444', boost:65, css:'rarity-mythique'   },
-    celeste:    { label:'Céleste',    color:'#f5c842', boost:85, css:'rarity-celeste'    }
+// V2.1: Weapons replaced by Éclats collection system.
+// RARITY_CONFIG/WEAPON_POOLS removed — kept as stubs for backward compat of toasts.
+const RARITY_ORDER = []; // legacy stub — no longer used
+const RARITY_CONFIG = {}; // legacy stub
+
+// Éclat types: 1 per act
+const ECLAT_TYPES = {
+    wild:   { name: 'Sauvage',  icon: '🌿', acts: [1], color: '#7dcc7d' },
+    stone:  { name: 'Pierre',   icon: '🪨', acts: [2], color: '#aaaaaa' },
+    flame:  { name: 'Braise',   icon: '🔥', acts: [3], color: '#ff6b35' },
+    abyss:  { name: 'Abyssal',  icon: '🌊', acts: [4], color: '#3d8ef0' },
+    cosmic: { name: 'Cosmique', icon: '✨', acts: [5], color: '#f5c842' }
 };
 
-const WEAPON_POOLS = {
-    endurance:  { types:['Épée','Dague','Arc','Hache'],          names:{ fer:['Lame Rouillée','Dague Ébréchée','Arc Noueux','Hache Émoussée'], bronze:['Lame Patinée','Dague de Bronze','Arc Tendu','Hache Grossière'], argent:['Épée Polie','Dague Affilée','Arc Argenté','Hache Tranchante'], or:['Lame Dorée','Dague Solaire','Arc d\'Or','Hache Royale'], platine:['Épée Glacée','Dague du Crépuscule','Arc Stellaire','Hache des Cimes'], emeraude:['Lame Forestière','Dague Venimeuse','Arc Sylvain','Hache des Racines'], diamant:['Tranchant du Néant','Dague de l\'Abîsse','Arc Brisé-Ciel','Hache du Titan'], legendaire:['Fléau de l\'Éternité','Dague du Dernier Souffle','Arc du Jugement','Hache du Conquérant'], mythique:['Déchirure du Monde','Croc de l\'Ombre','Arc de l\'Apocalypse','Hache du Dieu Mort'], celeste:['Fragment d\'Étoile','Larme du Cosmos','Arc de l\'Aurore Finale','Hache du Commencement'] } },
-    sagesse:    { types:['Pendentif','Bague','Anneau','Médaillon'], names:{ fer:['Pendentif Terne','Bague Oxydée','Anneau Fissuré','Médaillon Effacé'], bronze:['Pendentif Patiné','Bague de Bronze','Anneau Gravé','Médaillon Ancien'], argent:['Pendentif Argenté','Bague Ciselée','Anneau de Lune','Médaillon Poli'], or:['Pendentif Doré','Bague Solaire','Anneau du Sage','Médaillon Rayonnant'], platine:['Pendentif Glacé','Bague des Étoiles','Anneau Stellaire','Médaillon Cristallin'], emeraude:['Pendentif Sylvain','Bague des Profondeurs','Anneau Verdoyant','Médaillon Forestier'], diamant:['Œil du Savant','Bague du Néant','Anneau de l\'Éveil','Médaillon de l\'Abîsse'], legendaire:['Larme du Philosophe','Bague de l\'Éternité','Anneau du Grand Sage','Médaillon Cosmique'], mythique:['Fragment d\'Omniscience','Bague du Dieu Penseur','Anneau de la Vérité','Œil du Monde'], celeste:['Éclat de Conscience Pure','Bague de l\'Aurore','Anneau du Premier Mot','Médaillon de l\'Infini'] } },
-    serenite:   { types:['Gemme','Gemme','Gemme','Gemme'],         names:{ fer:['Caillou Gris','Caillou Gris','Caillou Gris','Caillou Gris'], bronze:['Pierre Ambrée','Pierre Ambrée','Pierre Ambrée','Pierre Ambrée'], argent:['Quartz Blanc','Quartz Blanc','Quartz Blanc','Quartz Blanc'], or:['Citrine Dorée','Citrine Dorée','Citrine Dorée','Citrine Dorée'], platine:['Aigue-Marine','Aigue-Marine','Aigue-Marine','Aigue-Marine'], emeraude:['Émeraude des Forêts','Émeraude des Forêts','Émeraude des Forêts','Émeraude des Forêts'], diamant:['Saphir Noir','Saphir Noir','Saphir Noir','Saphir Noir'], legendaire:['Larme de Lune','Larme de Lune','Larme de Lune','Larme de Lune'], mythique:['Larme de Lune Noire','Larme de Lune Noire','Larme de Lune Noire','Larme de Lune Noire'], celeste:['Fragment d\'Aurore','Fragment d\'Aurore','Fragment d\'Aurore','Fragment d\'Aurore'] } },
-    maitrise:   { types:['Grimoire','Sablier','Compas','Plume'],   names:{ fer:['Grimoire Écorné','Sablier Fêlé','Compas Rouillé','Plume Usée'], bronze:['Grimoire Patiné','Sablier de Bronze','Compas Gravé','Plume Bronzée'], argent:['Grimoire Argenté','Sablier Cristallin','Compas Poli','Plume d\'Argent'], or:['Grimoire Doré','Sablier Solaire','Compas Royal','Plume Dorée'], platine:['Grimoire Glacé','Sablier Stellaire','Compas des Étoiles','Plume de Platine'], emeraude:['Grimoire Sylvain','Sablier des Profondeurs','Compas Forestier','Plume Émeraude'], diamant:['Tome du Néant','Sablier de l\'Abîsse','Compas Brisé-Ciel','Plume du Titan'], legendaire:['Codex de l\'Éternité','Sablier du Dernier Instant','Compas du Jugement','Plume du Conquérant'], mythique:['Grimoire du Dieu Mort','Sablier de l\'Apocalypse','Compas de l\'Ombre','Plume du Monde'], celeste:['Fragment du Premier Mot','Sablier de l\'Aurore Finale','Compas de l\'Infini','Plume du Commencement'] } },
-    discipline: { types:['Bouclier','Armure','Ceinture','Heaume'], names:{ fer:['Bouclier Rouillé','Armure Cabossée','Ceinture Effilochée','Heaume Ébréché'], bronze:['Bouclier Patiné','Armure de Bronze','Ceinture Grossière','Heaume Gravé'], argent:['Bouclier Poli','Armure Ciselée','Ceinture Argentée','Heaume Clair'], or:['Bouclier Royal','Armure Dorée','Ceinture du Guerrier','Heaume Solaire'], platine:['Bouclier Glacé','Armure Stellaire','Ceinture des Cimes','Heaume Cristallin'], emeraude:['Bouclier Sylvain','Armure des Profondeurs','Ceinture Forestière','Heaume Verdoyant'], diamant:['Rempart du Néant','Armure de l\'Abîsse','Ceinture du Titan','Heaume Brisé-Ciel'], legendaire:['Égide de l\'Éternité','Armure du Conquérant','Ceinture du Jugement','Heaume du Dernier Rempart'], mythique:['Bouclier du Dieu Mort','Armure de l\'Apocalypse','Ceinture de l\'Ombre','Heaume du Monde'], celeste:['Fragment Indestructible','Armure de l\'Aurore Finale','Ceinture du Commencement','Heaume de l\'Infini'] } }
+// Éclat rarities: based on difficulty
+const ECLAT_RARITIES = {
+    commun:     { name: 'Commun',     color: '#9ca3af', icon: '○', rank: 1 },
+    rare:       { name: 'Rare',       color: '#4ecdc4', icon: '◈', rank: 2 },
+    epique:     { name: 'Épique',     color: '#9f7aea', icon: '◆', rank: 3 },
+    legendaire: { name: 'Légendaire', color: '#f5c842', icon: '★', rank: 4 },
+    primordial: { name: 'Primordial', color: '#ffffff', icon: '✦', rank: 5 }
 };
+
+const DIFF_TO_RARITY = {
+    facile:     'commun',
+    normal:     'rare',
+    difficile:  'epique',
+    legendaire: 'legendaire'
+    // L'Innommable → 'primordial' handled separately
+};
+
+// Map each act to its Éclat type
+function getEclatTypeForAct(act) {
+    for (const [key, cfg] of Object.entries(ECLAT_TYPES)) {
+        if (cfg.acts.includes(act)) return key;
+    }
+    return 'wild';
+}
+
+// WEAPON_POOLS removed V2.1
 
 const BOSS_DATA = [
     { id:'b01', name:'Sanglier Géant',              act:1, actName:'Les Terres Sauvages', skill:'endurance', xpBase:3500,  timerDays:7,  img:'images/boar_acte_1.webp',   emoji:'🐗', lore:'Une bête ancestrale qui broie les os des imprudents.' },
@@ -809,12 +828,21 @@ function migrateGameState() {
         stage: 1,
         branch: null, branchLockedAt: null,
         shards: { wild:0, stone:0, flame:0, abyss:0, cosmic:0 },
+        eclats: {},  // V2.1: type → { commun, rare, epique, legendaire, primordial }
         cosmetics: [],
         activatedAt: new Date().toISOString(),
         lastInteraction: null,
         dailyPopupSeenDate: null,
         popupEnabled: true
     };
+    // V2.1: ensure eclats exists on older saves
+    if (!gameState.creature.eclats) gameState.creature.eclats = {};
+    // Migrate legacy shards → eclats.commun
+    Object.entries(gameState.creature.shards || {}).forEach(([type, count]) => {
+        if (count > 0 && !gameState.creature.eclats[type]) {
+            gameState.creature.eclats[type] = { commun: count, rare:0, epique:0, legendaire:0, primordial:0 };
+        }
+    });
 
     // V5: migrate habits — add frequency and history fields
     gameState.habits.forEach(h => {
@@ -2711,6 +2739,10 @@ function renderProfilPage() {
     const sessStatsEl = document.getElementById('profil-session-stats');
     if (sessStatsEl) sessStatsEl.innerHTML = buildSessionStatsBlock();
 
+    // V2.1: Éclat collection
+    const eclatEl = document.getElementById('profil-eclat-section');
+    if (eclatEl) eclatEl.innerHTML = buildEclatCollection();
+
     // V9.2: correlation view
     const corrEl = document.getElementById('profil-correlation-section');
     if (corrEl) corrEl.innerHTML = buildCorrelationSection();
@@ -3452,7 +3484,10 @@ function openNewHabitModal(prefill) {
    ═══════════════════════════════════════════ */
 
 // V5.4: Weapon boost applies ONLY to the skill the weapon is equipped on
+// V2.1: weapons removed — stub always returns 1.0 (no boost, all callers untouched)
 function getWeaponBoostMult(skillKey) {
+    return 1;
+    // Legacy code below unreachable — kept for reference only
     const c = gameState.campaign;
     if (!c || !c.weapons) return 1;
     const w = c.weapons[skillKey];
@@ -3477,20 +3512,16 @@ function initCampaign() {
         gameState.campaign = {
             currentBossId: null, bossStartDate: null, bossXPAccumulated: 0,
             bossDefeated: [], difficulty: 'normal',
-            weapons: { endurance:null, sagesse:null, discipline:null, serenite:null, maitrise:null },
-            weaponHistory: [], brokenWeapons: [],
-            repairDeadline: { endurance:null, sagesse:null, discipline:null, serenite:null, maitrise:null },
+            bossVictories: {},
             restUntil: null
+            // V2.1: weapons/repairDeadline/brokenWeapons removed
         };
         saveGameState();
     }
     const c = gameState.campaign;
-    if (!c.weapons) c.weapons = { endurance:null, sagesse:null, discipline:null, serenite:null, maitrise:null };
-    if (!c.weaponHistory)  c.weaponHistory = [];
-    if (!c.brokenWeapons)  c.brokenWeapons = [];
-    if (!c.repairDeadline) c.repairDeadline = { endurance:null, sagesse:null, discipline:null, serenite:null, maitrise:null };
     if (!c.bossDefeated)   c.bossDefeated = [];
     if (!c.difficulty)     c.difficulty = 'normal';
+    if (!c.bossVictories)  c.bossVictories = {};
     if (c.bossXPAccumulated === undefined) c.bossXPAccumulated = 0;
 }
 
@@ -3654,25 +3685,18 @@ function checkBossTimerExpired() {
 function abandonBoss() {
     const c = gameState.campaign;
     if (!c || !c.currentBossId) return;
-    const boss = BOSS_DATA.find(b => b.id === c.currentBossId);
-    if (!boss) return;
-    const sk = boss.skill === 'all' ? 'endurance' : boss.skill;
-    if (c.weapons[sk]) {
-        c.weapons[sk].broken = true;
-        const dl = new Date(getNow()); dl.setDate(dl.getDate()+7);
-        c.repairDeadline[sk] = dl.toISOString();
-        toast(`💔 ${c.weapons[sk].name} brisée — 7 jours pour réparer.`, 'error');
-    }
+    // V2.1: weapons removed — abandoning a boss no longer breaks a weapon
     c.currentBossId = null; c.bossStartDate = null; c.bossXPAccumulated = 0;
     saveGameState(); renderUI();
+    toast('Combat abandonné.', 'info');
 }
 
 function confirmAbandonBoss() {
     const c = gameState.campaign;
     if (!c || !c.currentBossId) return;
-    const boss = BOSS_DATA.find(b => b.id === c.currentBossId);
-    if (!boss) return;
-    showModal({ type:'danger', title:'⚠️ Abandonner ?', body:`Ton arme ${SKILL_CONFIG[boss.skill==='all'?'endurance':boss.skill]?.name} sera brisée pendant 7 jours.`, confirmLabel:'Abandonner', onConfirm: abandonBoss });
+    showModal({ type:'danger', title:'⚠️ Abandonner le combat ?',
+        body:'La progression XP sur ce boss sera perdue.',
+        confirmLabel:'Abandonner', onConfirm: abandonBoss });
 }
 
 function checkCampaignTitleUnlocks() {
@@ -3800,70 +3824,53 @@ function confirmDifficultyChange(newDiff) {
 }
 
 // ── Loot system ──
+// V2.1: Weapon drops replaced by Éclat system.
+// Type = based on boss act, Rarity = based on difficulty.
 function rollAndShowLoot(boss, bonusDrop) {
     const c = gameState.campaign;
-    const bossRIdx = Math.min(RARITY_ORDER.length-1, boss.act); // acte = rareté de base
-    const shift = (DIFF_ORDER.indexOf(c.difficulty||'normal') - 1) + (bonusDrop ? 1 : 0);
-    const weights = RARITY_ORDER.map((_,i) => {
-        if (i < Math.max(0, bossRIdx-2)) return 0;
-        const d = i - bossRIdx;
-        if (d===0) return 50; if (d===1) return 25; if (d===-1) return 15;
-        if (d===2) return 8;  if (d===-2) return 2;  return 0;
-    });
-    const shifted = (() => {
-        const s = new Array(weights.length).fill(0);
-        weights.forEach((w,i) => { s[Math.min(weights.length-1, Math.max(0, i+shift))] += w; });
-        return s;
-    })();
-    const total = shifted.reduce((a,b)=>a+b,0);
-    let r = Math.random()*total;
-    let rarityKey = RARITY_ORDER[0];
-    for (let i=0; i<RARITY_ORDER.length; i++) { r -= shifted[i]; if (r <= 0) { rarityKey = RARITY_ORDER[i]; break; } }
-    // V6.2: Intelligent skill selection — 80% on missing weapons, 20% on equipped
-    const sk = (() => {
-        if (boss.skill !== 'all') return boss.skill;
-        const allSkills = ['endurance','sagesse','discipline','serenite','maitrise'];
-        const missingSkills = allSkills.filter(s => !c.weapons[s]);
-        const equippedSkills = allSkills.filter(s => !!c.weapons[s]);
-
-        // If all equipped → lowest level skill
-        if (missingSkills.length === 0) {
-            return allSkills.reduce((a,b) => gameState.skills[a].level<=gameState.skills[b].level?a:b);
-        }
-        // 80% on missing, 20% on equipped
-        const rng = Math.random();
-        if (rng < 0.8 || equippedSkills.length === 0) {
-            return missingSkills[Math.floor(Math.random() * missingSkills.length)];
-        } else {
-            return equippedSkills[Math.floor(Math.random() * equippedSkills.length)];
-        }
-    })();
-    const pool = WEAPON_POOLS[sk];
-    const ti = Math.floor(Math.random()*pool.types.length);
-    const newWeapon = { id:nextId()+'', name:pool.names[rarityKey][ti], type:pool.types[ti], rarity:rarityKey, skill:sk, boostPct:RARITY_CONFIG[rarityKey].boost, broken:false, obtainedDate:getLocalDateStr(getNow()) };
-    const cur = c.weapons[sk];
-    const isUpgrade = !cur || RARITY_ORDER.indexOf(rarityKey) > RARITY_ORDER.indexOf(cur.rarity);
-    if (isUpgrade) c.weapons[sk] = newWeapon;
-    if (!c.weaponHistory) c.weaponHistory = [];
-    c.weaponHistory.push(newWeapon.name);
+    if (!gameState.creature) return;
+    const eclatType = getEclatTypeForAct(boss.act);
+    let rarity = boss.conditionBased ? 'primordial' : (DIFF_TO_RARITY[c.difficulty || 'normal'] || 'commun');
+    // Fast victory bonus: upgrade rarity by one tier
+    if (bonusDrop && !boss.conditionBased) {
+        const rarityKeys = Object.keys(ECLAT_RARITIES);
+        const idx = rarityKeys.indexOf(rarity);
+        if (idx < rarityKeys.length - 1) rarity = rarityKeys[idx + 1];
+    }
+    // Add to creature's eclat collection
+    if (!gameState.creature.eclats) gameState.creature.eclats = {};
+    if (!gameState.creature.eclats[eclatType]) {
+        gameState.creature.eclats[eclatType] = { commun:0, rare:0, epique:0, legendaire:0, primordial:0 };
+    }
+    gameState.creature.eclats[eclatType][rarity] = (gameState.creature.eclats[eclatType][rarity] || 0) + 1;
+    // Also update legacy shards counter for cosmetics system
+    if (!gameState.creature.shards) gameState.creature.shards = { wild:0, stone:0, flame:0, abyss:0, cosmic:0 };
+    gameState.creature.shards[eclatType] = (gameState.creature.shards[eclatType] || 0) + 1;
+    // Double Éclat for Legendary difficulty
+    if (c.difficulty === 'legendaire') {
+        gameState.creature.eclats[eclatType][rarity]++;
+        gameState.creature.shards[eclatType]++;
+    }
     saveGameState();
-    showLootModal(boss, newWeapon, isUpgrade, bonusDrop);
+    showEclatModal(boss, eclatType, rarity, bonusDrop);
 }
 
-function showLootModal(boss, weapon, isUpgrade, bonusDrop) {
-    const rc = RARITY_CONFIG[weapon.rarity];
+function showEclatModal(boss, eclatType, rarity, bonusDrop) {
+    const typeCfg = ECLAT_TYPES[eclatType] || ECLAT_TYPES.wild;
+    const rarCfg = ECLAT_RARITIES[rarity] || ECLAT_RARITIES.commun;
+    const isDouble = gameState.campaign?.difficulty === 'legendaire';
     const overlay = document.createElement('div');
     overlay.className = 'loot-modal-overlay';
     overlay.innerHTML = `<div class="loot-modal-box">
-        <div class="loot-modal-title">LOOT OBTENU</div>
-        <div class="loot-modal-boss">${boss.name} vaincu !</div>
-        ${bonusDrop ? '<div style="color:var(--gold);font-size:0.72rem;margin-bottom:8px">⚡ Victoire rapide — bonus rareté !</div>' : ''}
+        <div class="loot-modal-title">ÉPREUVE VAINCUE</div>
+        <div class="loot-modal-boss">${escapeHtml(boss.name)} vaincu !</div>
+        ${bonusDrop ? '<div style="color:var(--gold);font-size:0.72rem;margin-bottom:8px">⚡ Victoire rapide — rareté améliorée !</div>' : ''}
+        ${isDouble ? '<div style="color:var(--gold);font-size:0.72rem;margin-bottom:8px">👑 Légendaire — double Éclat !</div>' : ''}
         <div class="loot-item-display">
-            <div style="font-size:3rem;margin-bottom:8px">⚔️</div>
-            <div class="loot-item-name ${rc.css}">${weapon.name}</div>
-            <div class="loot-item-rarity ${rc.css}">${rc.label} · ${SKILL_CONFIG[weapon.skill]?.name}</div>
-            <div class="loot-item-boost">+${weapon.boostPct}% XP ${SKILL_CONFIG[weapon.skill]?.name}</div>
-            <div style="font-size:0.72rem;margin-top:4px;color:${isUpgrade?'var(--green)':'var(--text-dim)'}">${isUpgrade?'✅ Nouvelle arme équipée !':'Déjà mieux — conservée en historique.'}</div>
+            <div style="font-size:3rem;margin-bottom:8px">${typeCfg.icon}</div>
+            <div class="loot-item-name" style="color:${rarCfg.color}">Éclat ${typeCfg.name}</div>
+            <div class="loot-item-rarity" style="color:${rarCfg.color}">${rarCfg.icon} ${rarCfg.name}</div>
+            <div style="font-size:0.72rem;margin-top:6px;color:var(--text-dim)">Ajouté à ta collection · servira à façonner ton loup</div>
         </div>
         <button class="btn-gold" style="width:100%;margin-top:8px" onclick="this.closest('.loot-modal-overlay').remove();renderUI()">Continuer</button>
     </div>`;
@@ -3871,23 +3878,8 @@ function showLootModal(boss, weapon, isUpgrade, bonusDrop) {
     overlay.addEventListener('click', e => { if(e.target===overlay){overlay.remove();renderUI();} });
 }
 
-// ── Weapon repairs ──
-function checkWeaponRepairs() {
-    const c = gameState.campaign;
-    if (!c || !c.weapons) return;
-    const now = getNow();
-    Object.keys(c.weapons).forEach(sk => {
-        const w = c.weapons[sk];
-        if (!w || !w.broken) return;
-        const dl = c.repairDeadline[sk];
-        if (dl && new Date(dl) < now) {
-            c.brokenWeapons.push({...w, lostDate:getLocalDateStr(now)});
-            c.weapons[sk] = null; c.repairDeadline[sk] = null;
-            toast(`💀 ${w.name} détruite — délai dépassé.`, 'error');
-            saveGameState();
-        }
-    });
-}
+// V2.1: Weapon repairs → no longer needed. Stub kept to avoid errors.
+function checkWeaponRepairs() { /* V2.1: weapons removed */ }
 
 // ── Subtab state ──
 let _campSubtab = 'boss';
@@ -3920,7 +3912,7 @@ function renderCampagneContent() {
     if (!gameState.campaign) initCampaign();
     if (_campSubtab === 'boss')   el.innerHTML = buildBossTab();
     if (_campSubtab === 'quetes') el.innerHTML = buildQuetesTabCamp();
-    if (_campSubtab === 'equip')  el.innerHTML = buildEquipTab();
+    // equip tab removed V2.1
 }
 
 // ── Boss tab ──
@@ -4027,22 +4019,21 @@ function buildBossTab() {
         if (d===0) return 50; if (d===1) return 25; if (d===-1) return 15;
         if (d===2) return 8;  if (d===-2) return 2;  return 0;
     });
-    const shiftedW = (() => {
-        const s = new Array(rawWeights.length).fill(0);
-        rawWeights.forEach((w,i) => { s[Math.min(rawWeights.length-1, Math.max(0, i+shift))] += w; });
-        return s;
-    })();
-    const totalW = shiftedW.reduce((a,b)=>a+b,0);
-    const lootPills = RARITY_ORDER.map((r, rIdx) => {
-        const dropPct = totalW > 0 ? Math.round((shiftedW[rIdx]||0)/totalW*100) : 0;
-        if (dropPct === 0) return '';
-        const rc = RARITY_CONFIG[r];
-        return `<span class="loot-pill" style="color:${rc.color};border-color:${rc.color}44;background:${rc.color}11">
-            <span class="loot-pill-drop">${dropPct}%</span>
-            <span class="loot-pill-name">${rc.label}</span>
-            <span class="loot-pill-boost">+${rc.boost}% XP</span>
-        </span>`;
-    }).filter(Boolean).join('');
+    // V2.1: Éclat preview (replaces weapon rarity pills)
+    const eclatType = getEclatTypeForAct(boss.act);
+    const eclatTypeCfg = ECLAT_TYPES[eclatType] || ECLAT_TYPES.wild;
+    const expectedRarity = boss.conditionBased ? 'primordial' : (DIFF_TO_RARITY[diff] || 'commun');
+    const rarityCfg = ECLAT_RARITIES[expectedRarity] || ECLAT_RARITIES.commun;
+    const eclatPreview = boss.conditionBased ? '' : `
+        <div class="eclat-preview-block">
+            <div class="eclat-preview-title">Éclat obtenu en cas de victoire</div>
+            <div class="eclat-preview-pill" style="color:${rarityCfg.color};border-color:${rarityCfg.color}44;background:${rarityCfg.color}11">
+                <span class="eclat-pill-icon">${eclatTypeCfg.icon}</span>
+                <span class="eclat-pill-name">${eclatTypeCfg.name}</span>
+                <span class="eclat-pill-rarity">${rarityCfg.icon} ${rarityCfg.name}</span>
+            </div>
+            <div class="eclat-preview-hint">Change de difficulté pour une rareté supérieure</div>
+        </div>`;
     // Boss chips — V10.0c: show the BROWSED act (may differ from displayed boss's act),
     // with act navigation arrows so old bosses stay reachable for re-fights.
     const browseAct = _displayActCurrent();
@@ -4085,10 +4076,7 @@ function buildBossTab() {
                 ${timerHtml}
             </div>
             ${actHtml}
-            ${boss.conditionBased ? '' : `<div class="loot-preview-block">
-                <div class="loot-preview-title">Loot potentiel · ${SKILL_CONFIG[boss.skill==='all'?'endurance':boss.skill]?.name||'Toutes'}</div>
-                <div class="loot-pills">${lootPills}</div>
-            </div>`}
+            ${eclatPreview}
             ${actNav}
             <div class="boss-chips-wrap"><div class="boss-chips-scroll">${chipsHtml}</div></div>
             ${buildVictoryBoard()}
@@ -4597,62 +4585,64 @@ function checkOnboarding() {
 const ONBOARD_SCREENS = [
     {
         title: 'Bienvenue dans Ascend',
-        subtitle: 'Transforme ta vie en aventure',
-        icon: '⚔️',
-        body: `<p>Chaque action réelle de ta vie te fait gagner de l'XP et progresser dans <strong>5 compétences</strong> :</p>
+        subtitle: 'Un louveteau t\'attend',
+        icon: '🐺',
+        body: `<p style="text-align:center">Une créature vit en toi. Chaque action réelle de ta vie la fait grandir.</p>
+            <p>En prenant soin de toi, tu prends soin d'elle. Elle te suivra pendant des mois, et sa forme finale reflétera <strong>qui tu es vraiment devenu</strong>.</p>
             <div class="onboard-skill-grid">
                 <div class="onboard-skill"><span style="color:#ff6b6b">💪</span> Endurance</div>
                 <div class="onboard-skill"><span style="color:#4ecdc4">📚</span> Sagesse</div>
                 <div class="onboard-skill"><span style="color:#9f7aea">🧘</span> Sérénité</div>
                 <div class="onboard-skill"><span style="color:#3d8ef0">⚡</span> Maîtrise</div>
                 <div class="onboard-skill"><span style="color:#f5c842">🏠</span> Discipline</div>
-            </div>
-            <p style="font-size:0.7rem;color:var(--text-dim);font-style:italic;margin-top:12px">Basé sur des recherches scientifiques (OMS, peer-reviewed studies)</p>`
-    },
-    {
-        title: '🏠 Onglet Habitudes',
-        subtitle: 'Le cœur de ta progression quotidienne',
-        icon: '🏠',
-        body: `<p>Ajoute des habitudes du quotidien et coche-les chaque jour. Tu gagnes <strong>15 XP</strong> par habitude + bonus de <strong>streak (+5%/jour)</strong>.</p>
-            <div class="onboard-tip">
-                <strong>💡 Conseil scientifique :</strong> 3-4 habitudes maintenues sont meilleures que 10 oubliées. Commence petit.
-            </div>
-            <p style="margin-top:12px">Une <strong>journée parfaite</strong> = toutes les habitudes cochées avant minuit.</p>`
-    },
-    {
-        title: '⚡ Onglet Sessions',
-        subtitle: 'Tes efforts mesurables',
-        icon: '⚡',
-        body: `<p>Une <strong>Session</strong> est un effort en minutes (sport, lecture, méditation, deep work...).</p>
-            <p>Log ton temps après chaque effort, l'XP gagnée dépend de la durée.</p>
-            <div class="onboard-tip">
-                <strong>📊 Repères scientifiques :</strong><br>
-                • Sport : 150 min/semaine (OMS)<br>
-                • Méditation : 10 min/jour<br>
-                • Lecture : 15 min/jour
             </div>`
     },
     {
-        title: '🗺️ Onglet Épreuves',
-        subtitle: 'Ton aventure RPG',
-        icon: '⚔️',
-        body: `<p>Affronte <strong>17 boss</strong> sur 5 actes — chaque XP gagnée endommage le boss actif.</p>
-            <p>Bats-le avant la deadline (jusqu'à 14 jours, alignée lundi) pour <strong>looter une arme</strong> qui boost ton XP.</p>
+        title: '✅ Tes habitudes, sa vie',
+        subtitle: 'Le cœur de ta progression',
+        icon: '✅',
+        body: `<p>Coche tes habitudes chaque jour. Chaque coche donne <strong>15 XP</strong> à ta créature (+ bonus de streak).</p>
             <div class="onboard-tip">
-                <strong>🎁 Drop rare :</strong> 10 raretés Fer → Céleste, jusqu'à <strong>+85% XP</strong> sur la compétence équipée.
+                <strong>💡 Conseil :</strong> 3-4 habitudes bien tenues valent mieux que 10 oubliées. Commence par ce qui est simple.
+            </div>
+            <p style="margin-top:12px">Une <strong>journée parfaite</strong> = toutes tes habitudes daily cochées avant minuit.</p>
+            <p style="margin-top:8px">Les <strong>sessions</strong> (sport, lecture, méditation…) donnent aussi de l'XP selon la durée.</p>`
+    },
+    {
+        title: '🐺 Il grandit avec toi',
+        subtitle: 'Jamais de punition',
+        icon: '🐺',
+        body: `<p>Ton loup évolue en <strong>4 stades</strong> sur plusieurs mois :</p>
+            <div class="onboard-tip" style="margin:8px 0">
+                Louveteau → Jeune Loup → Loup Adulte → <strong>Forme Mythique</strong>
+            </div>
+            <p>À 3 mois, sa <strong>forme mythique se révèle</strong> selon les compétences que tu as le plus développées.</p>
+            <p style="margin-top:10px;color:var(--gold)">Il t'attend toujours. Il ne te juge pas. Il grandit quand tu reviens.</p>`
+    },
+    {
+        title: '🗺️ Les Épreuves',
+        subtitle: 'Optionnel · Récompenses d\'Éclats',
+        icon: '🗺️',
+        body: `<p>Affronte <strong>17 boss</strong> sur 5 actes — chaque XP gagné les blesse.</p>
+            <p>Ce n'est <strong>pas obligatoire</strong> — ton loup grandit même sans les Épreuves.</p>
+            <div class="onboard-tip">
+                <strong>🌿 Éclats :</strong> chaque victoire t'offre un Éclat (type selon l'acte, rareté selon la difficulté). Collection pour personnaliser ton loup à l'avenir.
             </div>`
     },
     {
-        title: 'Tu es prêt, Hero',
+        title: 'Tu es prêt',
         subtitle: 'Quelques derniers conseils',
         icon: '🎯',
         body: `<div class="onboard-tip">
-                <strong>💾 Sauvegarde régulière :</strong> Va dans Paramètres → Exporter mes données. Sans ça, tu peux perdre ta progression si ton navigateur est nettoyé.
+                <strong>🐺 Nomme ton loup :</strong> donne-lui un nom qui t'appartient — clique sur son nom dans l'onglet Habitudes.
+            </div>
+            <div class="onboard-tip" style="margin-top:10px">
+                <strong>💾 Sauvegarde régulière :</strong> Paramètres → Exporter mes données. Sans ça, tu peux perdre ta progression.
             </div>
             <div class="onboard-tip" style="margin-top:10px">
                 <strong>💭 Note ton humeur :</strong> Le bouton flottant en bas à droite — 1 tap par jour pour suivre ton bien-être.
             </div>
-            <p style="margin-top:14px;text-align:center;font-family:'Cinzel',serif;color:var(--gold)">L'aventure commence maintenant.</p>`
+            <p style="margin-top:14px;text-align:center;font-family:'Cinzel',serif;color:var(--gold)">Ton loup t'attend.</p>`
     }
 ];
 
@@ -7137,7 +7127,48 @@ function streakBadge(streak) {
     return `<span class="streak-badge ${m.cls}" title="Palier ${m.label}">${m.icon}</span>`;
 }
 
-// V10.0b: cumulative session time across ALL sessions & logs.
+// V2.1: Éclat collection display in Profil
+function buildEclatCollection() {
+    const eclats = gameState.creature?.eclats || {};
+    const allEmpty = Object.values(eclats).every(typeObj =>
+        Object.values(typeObj || {}).every(v => v === 0)
+    );
+    if (allEmpty) {
+        const hasBosses = (gameState.campaign?.bossDefeated || []).length > 0;
+        if (!hasBosses) return ''; // nothing to show yet
+        return `<div class="section-title" style="margin-top:16px;">✨ Collection d'Éclats</div>
+            <div class="eclat-empty">Vaincs des épreuves pour collecter tes premiers Éclats.</div>`;
+    }
+
+    const cards = Object.entries(ECLAT_TYPES).map(([typeKey, typeCfg]) => {
+        const typeEclats = eclats[typeKey] || {};
+        const total = Object.values(typeEclats).reduce((s, v) => s + (v||0), 0);
+        if (total === 0) return '';
+        const rarityPills = Object.entries(ECLAT_RARITIES)
+            .filter(([rarKey]) => (typeEclats[rarKey] || 0) > 0)
+            .map(([rarKey, rarCfg]) => `
+                <span class="eclat-rarity-pill" style="color:${rarCfg.color};border-color:${rarCfg.color}44;background:${rarCfg.color}0d">
+                    ${rarCfg.icon} ${rarCfg.name} ×${typeEclats[rarKey]}
+                </span>`).join('');
+        return `
+        <div class="eclat-collection-card">
+            <div class="eclat-card-icon" style="color:${typeCfg.color}">${typeCfg.icon}</div>
+            <div class="eclat-card-name">${typeCfg.name}</div>
+            <div class="eclat-card-total">×${total}</div>
+            <div class="eclat-card-rarities">${rarityPills}</div>
+        </div>`;
+    }).filter(Boolean).join('');
+
+    const totalAll = Object.values(eclats).reduce((s, t) =>
+        s + Object.values(t||{}).reduce((a,v)=>a+(v||0),0), 0);
+
+    return `
+    <div class="section-title" style="margin-top:16px;">✨ Collection d'Éclats</div>
+    <div class="eclat-collection-grid">${cards}</div>
+    <div class="eclat-collection-total">${totalAll} Éclat${totalAll>1?'s':''} collecté${totalAll>1?'s':''} · utilisables pour évoluer ton loup</div>`;
+}
+
+
 // Shows total hours, log count, and the most-practiced session.
 function buildSessionStatsBlock() {
     let totalMins = 0, totalLogs = 0;
