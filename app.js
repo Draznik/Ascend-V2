@@ -55,7 +55,7 @@ const STORAGE_KEY = 'lifeRPGState_v3';
 // ─────────────────────────────────────────────
 //  V5 CONSTANTS (must be before loadGameState)
 // ─────────────────────────────────────────────
-const APP_VERSION = 'V2.1';
+const APP_VERSION = 'V2.2';
 
 const TITLES_BY_SKILL = {
     serenite:   [
@@ -2349,7 +2349,7 @@ function renderHabitsPage() {
         const weaponHtml  = weaponPct > 0
             ? `<span class="habit-weapon-boost"> · +${weaponPct}% ⚔️</span>` : '';
         const streakHtml  = currentStreak > 0
-            ? `<span class="habit-streak"> · 🔥${currentStreak}j (+${streakBonus}%)${streakBadge(currentStreak)}</span>` : '';
+            ? `<span class="habit-streak"> · 🔥${currentStreak}j (+${Math.round(streakBonus * 100)}%)${streakBadge(currentStreak)}</span>` : '';
         const skillCfg    = SKILL_CONFIG[habit.category || 'discipline'];
         const recoTag     = habit.isRecommended
             ? `<span class="habit-reco-tag" style="color:${skillCfg.color}">${skillCfg.icon}</span>` : '';
@@ -2620,14 +2620,30 @@ function renderProfilPage() {
 
     // Global XP bar
     const gl = getGlobalLevel();
-    const glNeeded  = calculateXPForLevel(gl+1) - calculateXPForLevel(gl);
-    const glCurrent = Math.floor(Object.values(gameState.skills).reduce((s,sk) => s + sk.currentXP, 0) / 5);
-    const glPct     = Math.min(100, (glCurrent / glNeeded) * 100);
+    // V2.2 fix: global level bar tracks how many individual skills have passed
+    // the current global level floor. glCurrent = skills above floor / 5.
+    // E.g. global=4, Discipline at Lv5 = 1/5 skills above → 20% progress.
+    const skillLevels  = Object.values(gameState.skills).map(s => s.level);
+    const sumLevels    = skillLevels.reduce((a,b) => a+b, 0);
+    const nSkills      = skillLevels.length;
+    const baseSumGL    = gl * nSkills;
+    const targetSumGL  = (gl + 1) * nSkills;
+    const glProgress   = Math.max(0, sumLevels - baseSumGL);          // 0 – nSkills
+    const glProgressOf = targetSumGL - baseSumGL;                     // always nSkills
+    const glPct        = Math.min(100, (glProgress / glProgressOf) * 100);
+    // Human-readable: "X compétences sur 5 ont dépassé le niveau N"
+    const skillsAhead  = skillLevels.filter(l => l > gl).length;
     const glLabel   = document.getElementById('global-level-label');
     const glVal     = document.getElementById('global-xp-val');
     const glFill    = document.getElementById('global-xp-fill');
     if (glLabel) glLabel.textContent = `Niveau Global · ${gl} / 100`;
-    if (glVal)   glVal.textContent   = `${glCurrent.toLocaleString()} / ${glNeeded.toLocaleString()} XP`;
+    if (glVal) {
+        if (skillsAhead === 0) {
+            glVal.textContent = `Développe une compétence au-delà du niveau ${gl}`;
+        } else {
+            glVal.textContent = `${skillsAhead} / ${nSkills} compétences au niveau ${gl+1}+`;
+        }
+    }
     if (glFill)  glFill.style.width  = `${glPct}%`;
 
     const barsEl = document.getElementById('profil-skill-bars');
@@ -3644,7 +3660,8 @@ function defeatBoss(boss) {
     const isRefight = c._isRefight === true;
     const start = new Date(c.bossStartDate);
     const daysTaken = (getNow() - start) / 86400000;
-    const bonusDrop = daysTaken <= 3;
+    // V2.2: bonus rarity if victory within 175h (≈7.3 days) — was 3 days, too strict
+    const bonusDrop = daysTaken * 24 <= 175;
     if (!c.bossDefeated.includes(boss.id)) {
         c.bossDefeated.push(boss.id);
     }
@@ -6684,31 +6701,41 @@ function creatureSVG() {
 }
 
 function creatureSVGStage1(state) {
+    // V2.2: use real image if available in /images/ folder (added by user),
+    // fallback to SVG for environments where the image isn't deployed yet.
+    const imgPath = 'images/wolf_stage1.jpg';
+    const stateClass = `creature-img-wrap creature-${state}`;
+    const eyeOverlay = state === 'sleeping'
+        ? '<div class="creature-img-overlay-sleep">😴</div>'
+        : state === 'radiant'
+        ? '<div class="creature-img-overlay-glow creature-aura-ring"></div>'
+        : '';
+    return `<div class="${stateClass}">
+        <img src="${imgPath}" alt="Louveteau"
+             class="creature-img creature-img-stage1"
+             onerror="this.parentElement.innerHTML=\`${creatureSVGStage1Fallback(state).replace(/`/g,"'")}\`"/>
+        ${eyeOverlay}
+    </div>`;
+}
+
+// SVG fallback if the image file isn't deployed yet
+function creatureSVGStage1Fallback(state) {
     const eyeOpacity = state === 'sleeping' ? 0 : state === 'waiting' ? 0.5 : 1;
     const auraOpacity = state === 'radiant' ? 0.5 : 0;
     const bgColor = state === 'sleeping' ? '#111' : '#1a1a2e';
     return `
     <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" class="creature-svg creature-stage1 creature-${state}">
-        <!-- Background glow -->
         <circle cx="60" cy="62" r="46" fill="${bgColor}" opacity="0.7"/>
         <circle cx="60" cy="62" r="46" fill="none" stroke="#f5c842" stroke-width="0.5" opacity="${auraOpacity * 0.6}"/>
-        <!-- Aura ring (radiant state) -->
         ${state === 'radiant' ? `<circle cx="60" cy="62" r="50" fill="none" stroke="#f5c842" stroke-width="1.5" opacity="0.3" class="creature-aura-ring"/>` : ''}
-        <!-- Body (rounded, chibi) -->
         <ellipse cx="60" cy="72" rx="24" ry="18" fill="#888" opacity="0.9"/>
-        <!-- Head (large, chibi proportions) -->
         <circle cx="60" cy="52" r="22" fill="#999"/>
-        <!-- Ear left -->
         <polygon points="38,36 44,20 52,36" fill="#888"/>
         <polygon points="40,35 44,24 50,35" fill="#c67"/>
-        <!-- Ear right -->
         <polygon points="82,36 76,20 68,36" fill="#888"/>
         <polygon points="80,35 76,24 70,35" fill="#c67"/>
-        <!-- Muzzle -->
         <ellipse cx="60" cy="57" rx="10" ry="7" fill="#bbb"/>
-        <!-- Nose -->
         <ellipse cx="60" cy="53" rx="3" ry="2" fill="#333"/>
-        <!-- Eyes -->
         ${state === 'sleeping'
             ? `<path d="M51,47 Q54,50 57,47" stroke="#555" stroke-width="1.5" fill="none"/>
                <path d="M63,47 Q66,50 69,47" stroke="#555" stroke-width="1.5" fill="none"/>`
@@ -6719,13 +6746,8 @@ function creatureSVGStage1(state) {
                <circle cx="55.5" cy="45.5" r="0.8" fill="#fff" opacity="${eyeOpacity}"/>
                <circle cx="67.5" cy="45.5" r="0.8" fill="#fff" opacity="${eyeOpacity}"/>`
         }
-        <!-- Tail curl (bottom right) -->
         <path d="M78,82 Q95,75 90,90 Q85,100 75,92" stroke="#888" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <!-- Stars if sleeping -->
-        ${state === 'sleeping' ? `
-        <text x="80" y="35" font-size="8" opacity="0.6">⭐</text>
-        <text x="30" y="30" font-size="6" opacity="0.5">✦</text>
-        <text x="88" y="25" font-size="5" opacity="0.4">✦</text>` : ''}
+        ${state === 'sleeping' ? `<text x="80" y="35" font-size="8" opacity="0.6">⭐</text>` : ''}
     </svg>`;
 }
 

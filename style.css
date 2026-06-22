@@ -3659,3 +3659,64 @@ button, .tab-btn, .boss-chip, .camp-subtab, .btn-gold, .btn-blue, .btn-cancel {
     font-size: 0.68rem; color: var(--text-dim);
     font-style: italic;
 }
+
+/* V2.2 — Creature image (real photo replaces SVG for stage 1) */
+.creature-img-wrap {
+    position: relative;
+    display: inline-block;
+}
+.creature-img {
+    display: block;
+    border-radius: 50%;
+    border: 2px solid rgba(245,200,66,0.3);
+    object-fit: cover;
+    background: #0d0d1a;
+}
+.creature-img-stage1 {
+    width: 120px; height: 120px;
+    animation: creatureBreathe 3.5s ease-in-out infinite;
+}
+/* Radiant state: golden ring */
+.creature-radiant .creature-img {
+    border-color: rgba(245,200,66,0.7);
+    box-shadow: 0 0 16px rgba(245,200,66,0.35);
+}
+/* Sleeping state: desaturate */
+.creature-sleeping .creature-img {
+    filter: saturate(0.3) brightness(0.7);
+}
+/* Waiting state: slight dim */
+.creature-waiting .creature-img {
+    filter: brightness(0.85);
+}
+/* Glow overlay for radiant */
+.creature-img-overlay-glow {
+    position: absolute; inset: -4px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    opacity: 0.5;
+    pointer-events: none;
+}
+/* Sleep overlay */
+.creature-img-overlay-sleep {
+    position: absolute; top: 4px; right: 4px;
+    font-size: 1rem;
+    animation: zzz 2s ease-in-out infinite;
+}
+@keyframes zzz {
+    0%,100% { opacity: 0.5; transform: translateY(0) scale(0.9); }
+    50% { opacity: 1; transform: translateY(-4px) scale(1.1); }
+}
+
+/* Future animation keyframes (will be triggered when 4 poses are available) */
+@keyframes wolfWakeUp {
+    0%   { transform: scale(1) rotate(0deg); }
+    20%  { transform: scale(1.05) rotate(-3deg); }
+    40%  { transform: scale(1.1) rotate(3deg); }
+    60%  { transform: scale(1.05) rotate(-2deg); }
+    80%  { transform: scale(1.02) rotate(1deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+.creature-img-wrap.celebrating .creature-img {
+    animation: wolfWakeUp 1.2s ease-in-out, creatureBreathe 3.5s ease-in-out 1.2s infinite;
+}
