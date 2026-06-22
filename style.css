@@ -3663,23 +3663,25 @@ button, .tab-btn, .boss-chip, .camp-subtab, .btn-gold, .btn-blue, .btn-cancel {
 /* V2.2 — Creature image (real photo replaces SVG for stage 1) */
 .creature-img-wrap {
     position: relative;
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
 }
 .creature-img {
     display: block;
-    border-radius: 50%;
-    border: 2px solid rgba(245,200,66,0.3);
-    object-fit: cover;
-    background: #0d0d1a;
+    border-radius: 0;
+    border: none;
+    object-fit: contain;
+    background: transparent;
 }
 .creature-img-stage1 {
-    width: 120px; height: 120px;
+    width: 200px; height: 200px;
     animation: creatureBreathe 3.5s ease-in-out infinite;
 }
-/* Radiant state: golden ring */
+/* Radiant state: subtle glow */
 .creature-radiant .creature-img {
-    border-color: rgba(245,200,66,0.7);
-    box-shadow: 0 0 16px rgba(245,200,66,0.35);
+    filter: drop-shadow(0 0 12px rgba(245,200,66,0.4));
 }
 /* Sleeping state: desaturate */
 .creature-sleeping .creature-img {
