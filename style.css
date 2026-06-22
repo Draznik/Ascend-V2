@@ -183,29 +183,35 @@ body::after {
 
 .avatar-stage {
     position: relative;
-    width: 260px;
-    height: 260px;
-    margin: 16px auto 8px;
+    width: 100%;
+    max-width: 600px;
+    margin: 16px auto 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
 }
 
-/* Center avatar */
+/* Louveteau container - no circular background */
 .avatar-center {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100px; height: 100px;
-    border-radius: 50%;
-    background: linear-gradient(145deg, #0e1830, #1a2a50);
-    border: 3px solid var(--gold-dim);
-    box-shadow: 0 0 30px rgba(245,200,66,0.25), inset 0 0 20px rgba(0,0,0,0.5);
-    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    transition: box-shadow 0.3s;
-    overflow: hidden;
+    transition: opacity 0.3s;
+    overflow: visible;
 }
 
 .avatar-center:hover {
-    box-shadow: 0 0 40px rgba(245,200,66,0.4), inset 0 0 20px rgba(0,0,0,0.5);
+    box-shadow: none;
+    opacity: 0.9;
 }
 
 /* Superman S SVG */
@@ -263,11 +269,33 @@ body::after {
     z-index: 10;
 }
 
+/* NEW: Skills in horizontal row */
+.skills-row-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.skill-orbit-flex {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+}
+
 /* Orbit positions now set via JS inline px styles */
 
 .skill-orbit svg {
     width: 52px; height: 52px;
     transform: rotate(-90deg); /* start fill from bottom → rotate so bottom = 270° */
+}
+
+.skill-orbit-flex svg {
+    width: 52px; height: 52px;
+    transform: rotate(-90deg);
 }
 
 /* Liquid fill: track + fill arc */
@@ -956,8 +984,8 @@ button { font-family: 'Outfit', sans-serif; cursor: pointer; transition: all 0.2
 
 /* ── Responsive ── */
 @media (max-width: 380px) {
-    .avatar-stage { width: 220px; height: 220px; }
-    .avatar-center { width: 86px; height: 86px; }
+    .avatar-stage { max-width: 320px; gap: 24px; }
+    .creature-img-stage1 { width: 160px; height: 160px; }
 }
 
 /* ═══════════════════════════════════════════
@@ -988,6 +1016,7 @@ button { font-family: 'Outfit', sans-serif; cursor: pointer; transition: all 0.2
 }
 
 .skill-orbit:hover .orbit-tooltip { display: block; }
+.skill-orbit-flex:hover .orbit-tooltip { display: block; }
 
 /* ── V3.1: Session orbits at exact 90° (overrides CSS classes — now inline style) ── */
 /* Override old class-based positions for Sessions tab — handled inline in JS now */

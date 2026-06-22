@@ -2097,7 +2097,7 @@ function toggleOrbitTooltip(orbitEl) {
 }
 // Close tooltips when clicking elsewhere
 document.addEventListener('click', e => {
-    if (!e.target.closest('.skill-orbit')) {
+    if (!e.target.closest('.skill-orbit, .skill-orbit-flex')) {
         document.querySelectorAll('.orbit-tooltip.visible')
             .forEach(t => t.classList.remove('visible'));
     }
@@ -2289,21 +2289,16 @@ function updateTopBar() {
 function renderHabitsPage() {
     const avatarStage = document.getElementById('habits-avatar-stage');
     if (avatarStage) {
-        // V2.0: creature replaces the avatar center. Orbits stay.
-        const HABITS_POSITIONS = {
-            sagesse:    { left:'130.0px', top:'35.0px'  },
-            endurance:  { left:'47.7px',  top:'82.5px'  },
-            serenite:   { left:'212.3px', top:'82.5px'  },
-            maitrise:   { left:'212.3px', top:'177.5px' },
-            discipline: { left:'47.7px',  top:'177.5px' }
-        };
+        // V2.2: louveteau PNG libre en haut, 5 orbits en ligne en dessous
         const orbits = Object.keys(SKILL_CONFIG).map(key => {
-            const pos = HABITS_POSITIONS[key];
-            return `<div class="skill-orbit" style="left:${pos.left};top:${pos.top}" onclick="toggleOrbitTooltip(this)">${buildOrbitSVG(key, gameState.skills[key])}</div>`;
+            return `<div class="skill-orbit-flex" onclick="toggleOrbitTooltip(this)">${buildOrbitSVG(key, gameState.skills[key])}</div>`;
         }).join('');
         avatarStage.innerHTML = `
-            ${orbits}
-            <div class="avatar-center">${creatureSVG()}</div>`;
+            <div class="avatar-center">${creatureSVG()}</div>
+            <div class="skills-row-container">
+                ${orbits}
+            </div>`;
+    }
     }
 
     const unEl = document.getElementById('habit-username');
