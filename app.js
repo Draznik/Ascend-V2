@@ -157,23 +157,23 @@ function getEclatTypeForAct(act) {
 // WEAPON_POOLS removed V2.1
 
 const BOSS_DATA = [
-    { id:'b01', name:'Sanglier Géant',              act:1, actName:'Les Terres Sauvages', skill:'constitution', xpBase:3500,  timerDays:7,  img:'images/boar_acte_1.jpg', imgLegendaire:'images/boar_legendaire_acte_1.jpg', emoji:'🐗', lore:'Une bête ancestrale qui broie les os des imprudents.' },
-    { id:'b02', name:'Brigand des Chemins',          act:1, actName:'Les Terres Sauvages', skill:'vigueur',xpBase:3500,  timerDays:7,  img:'images/bandit_acte_1.webp',   emoji:'🗡️', lore:'Il rôde aux carrefours, attendant les voyageurs seuls.' },
-    { id:'b03', name:'Ours des Cimes',               act:1, actName:'Les Terres Sauvages', skill:'agilite', xpBase:3500,  timerDays:7,  img:'images/ours_acte_1.webp',     emoji:'🐻', lore:'Gardien des hauteurs, personne ne passe sans son accord.' },
-    { id:'b04', name:'Loup Alpha',                   act:2, actName:'La Forêt Profonde',   skill:'instinct', xpBase:4500,  timerDays:10, img:'images/loup_acte_2.webp',     emoji:'🐺', lore:'Ses yeux dorés voient à travers le brouillard.' },
-    { id:'b05', name:'Reine des Guêpes',             act:2, actName:'La Forêt Profonde',   skill:'serenite',  xpBase:4500,  timerDays:10, img:'images/guêpe_acte_2.webp',   emoji:'🐝', lore:'Son bourdonnement annonce la fin.' },
-    { id:'b06', name:'Géant de Pierre',              act:2, actName:'La Forêt Profonde',   skill:'constitution',xpBase:4500,  timerDays:10, img:'images/GOLEM_ACTE_2.webp',   emoji:'🗿', lore:'Né de la roche ancienne, il ne connaît pas la fatigue.' },
-    { id:'b07', name:'Chevalier Maudit',             act:3, actName:'Les Terres Brûlées',  skill:'agilite',  xpBase:5500,  timerDays:14, img:'images/chevalier_acte_3.webp',emoji:'⚔️',lore:"Condamné à se battre pour l'éternité." },
-    { id:'b08', name:'Sorcière des Cendres',         act:3, actName:'Les Terres Brûlées',  skill:'instinct',   xpBase:5500,  timerDays:14, img:'',                          emoji:'🔥', lore:'Elle transforme tout ce qu\'elle touche en cendres.' },
-    { id:'b09', name:'Seigneur de Guerre',           act:3, actName:'Les Terres Brûlées',  skill:'vigueur', xpBase:5500,  timerDays:14, img:'',                          emoji:'💀', lore:"Son armée n'a jamais connu la défaite." },
-    { id:'b10', name:'Effigie Rampante',             act:4, actName:"L'Abîsse",            skill:'serenite',  xpBase:6500,  timerDays:21, img:'',                          emoji:'👁️', lore:'Elle rampe dans l\'ombre et mange les esprits.' },
-    { id:'b11', name:'Loup-Garou des Ruines',        act:4, actName:"L'Abîsse",            skill:'constitution', xpBase:6500,  timerDays:21, img:'images/loup_garou_acte_4.webp',emoji:'🌕',lore:'La pleine lune réveille une rage sans fond.' },
-    { id:'b12', name:"Troll de l'Abîsse",            act:4, actName:"L'Abîsse",            skill:'vigueur',xpBase:6500,  timerDays:21, img:'',                          emoji:'🧌', lore:'Son corps est fait de roche et de ténèbres.' },
-    { id:'b13', name:'Kraken des Marais',            act:4, actName:"L'Abîsse",            skill:'instinct',  xpBase:6500,  timerDays:21, img:'',                          emoji:'🦑', lore:'Ses tentacules s\'étendent sur des kilomètres.' },
-    { id:'b14', name:'Ignareth le Dragon de Cendre', act:5, actName:'Le Cosmos',           skill:'constitution', xpBase:8000,  timerDays:30, img:'images/ignareth_acte_5.webp',emoji:'🐉', lore:'Son souffle transforme les montagnes en poussière.' },
-    { id:'b15', name:"Veyral l'Ange Déchu",          act:5, actName:'Le Cosmos',           skill:'agilite',  xpBase:8000,  timerDays:30, img:'',                          emoji:'👼', lore:"Il a choisi la chute plutôt que l'obéissance." },
-    { id:'b16', name:'Kharoth le Titan Oublié',      act:5, actName:'Le Cosmos',           skill:'serenite',xpBase:8000,  timerDays:30, img:'',                          emoji:'⛰️', lore:'Il dormait depuis la naissance des étoiles.' },
-    { id:'b17', name:"L'Innommable",                 act:5, actName:'Le Cosmos',           skill:'all',       xpBase:0,     timerDays:66, img:'images/l_innomable.webp',    emoji:'🌑', lore:"Il n'a pas de nom. Il est la fin.", isFinal:true, conditionBased:true }
+    { id:'b01', name:'Sanglier Géant',              act:1, actName:'Les Terres Sauvages', skill:'constitution', xpBase:3500,  timerDays:7,  img:'images/boss/acte1/boar.jpg',          imgLegendaire:'images/boss/acte1/boar_legendaire.jpg', emoji:'🐗', lore:'Une bête ancestrale qui broie les os des imprudents.' },
+    { id:'b02', name:'Brigand des Chemins',          act:1, actName:'Les Terres Sauvages', skill:'vigueur',      xpBase:3500,  timerDays:7,  img:'images/boss/acte1/bandit.webp',        emoji:'🗡️', lore:'Il rôde aux carrefours, attendant les voyageurs seuls.' },
+    { id:'b03', name:'Ours des Cimes',               act:1, actName:'Les Terres Sauvages', skill:'agilite',      xpBase:3500,  timerDays:7,  img:'images/boss/acte1/ours.webp',          emoji:'🐻', lore:'Gardien des hauteurs, personne ne passe sans son accord.' },
+    { id:'b04', name:'Loup Alpha',                   act:2, actName:'La Forêt Profonde',   skill:'instinct',     xpBase:4500,  timerDays:10, img:'images/boss/acte2/loup_acte_2.webp',   emoji:'🐺', lore:'Ses yeux dorés voient à travers le brouillard.' },
+    { id:'b05', name:'Reine des Guêpes',             act:2, actName:'La Forêt Profonde',   skill:'serenite',     xpBase:4500,  timerDays:10, img:'images/boss/acte2/guepe_acte_2.webp',  emoji:'🐝', lore:'Son bourdonnement annonce la fin.' },
+    { id:'b06', name:'Géant de Pierre',              act:2, actName:'La Forêt Profonde',   skill:'constitution', xpBase:4500,  timerDays:10, img:'images/boss/acte2/golem.jpg',          emoji:'🗿', lore:'Né de la roche ancienne, il ne connaît pas la fatigue.' },
+    { id:'b07', name:'Chevalier Maudit',             act:3, actName:'Les Terres Brûlées',  skill:'agilite',      xpBase:5500,  timerDays:14, img:'images/boss/acte3/chevalier.jpg',      emoji:'⚔️', lore:"Condamné à se battre pour l'éternité." },
+    { id:'b08', name:'Sorcière des Cendres',         act:3, actName:'Les Terres Brûlées',  skill:'instinct',     xpBase:5500,  timerDays:14, img:'',                                    emoji:'🔥', lore:'Elle transforme tout ce qu\'elle touche en cendres.' },
+    { id:'b09', name:'Seigneur de Guerre',           act:3, actName:'Les Terres Brûlées',  skill:'vigueur',      xpBase:5500,  timerDays:14, img:'',                                    emoji:'💀', lore:"Son armée n'a jamais connu la défaite." },
+    { id:'b10', name:'Effigie Rampante',             act:4, actName:"L'Abîsse",            skill:'serenite',     xpBase:6500,  timerDays:21, img:'',                                    emoji:'👁️', lore:'Elle rampe dans l\'ombre et mange les esprits.' },
+    { id:'b11', name:'Loup-Garou des Ruines',        act:4, actName:"L'Abîsse",            skill:'constitution', xpBase:6500,  timerDays:21, img:'images/boss/acte4/loup_garou.jpg',     emoji:'🌕', lore:'La pleine lune réveille une rage sans fond.' },
+    { id:'b12', name:"Troll de l'Abîsse",            act:4, actName:"L'Abîsse",            skill:'vigueur',      xpBase:6500,  timerDays:21, img:'',                                    emoji:'🧌', lore:'Son corps est fait de roche et de ténèbres.' },
+    { id:'b13', name:'Kraken des Marais',            act:4, actName:"L'Abîsse",            skill:'instinct',     xpBase:6500,  timerDays:21, img:'',                                    emoji:'🦑', lore:'Ses tentacules s\'étendent sur des kilomètres.' },
+    { id:'b14', name:'Ignareth le Dragon de Cendre', act:5, actName:'Le Cosmos',           skill:'constitution', xpBase:8000,  timerDays:30, img:'images/boss/acte5/ignareth.jpg',       emoji:'🐉', lore:'Son souffle transforme les montagnes en poussière.' },
+    { id:'b15', name:"Veyral l'Ange Déchu",          act:5, actName:'Le Cosmos',           skill:'agilite',      xpBase:8000,  timerDays:30, img:'',                                    emoji:'👼', lore:"Il a choisi la chute plutôt que l'obéissance." },
+    { id:'b16', name:'Kharoth le Titan Oublié',      act:5, actName:'Le Cosmos',           skill:'serenite',     xpBase:8000,  timerDays:30, img:'',                                    emoji:'⛰️', lore:'Il dormait depuis la naissance des étoiles.' },
+    { id:'b17', name:"L'Innommable",                 act:5, actName:'Le Cosmos',           skill:'all',          xpBase:0,     timerDays:66, img:'images/boss/acte5/innommable.jpg',     emoji:'🌑', lore:"Il n'a pas de nom. Il est la fin.", isFinal:true, conditionBased:true }
 ];
 
 
@@ -6749,11 +6749,11 @@ const BRANCH_CONFIG = {
 };
 
 function getCreatureCardPath(stage, branch) {
-    if (stage === 1) return 'images/creature/wolf_s1.jpg';
-    if (stage === 2) return `images/creature/wolf_s2_${branch}.jpg`;
-    if (stage === 3) return `images/creature/wolf_s3_${branch}.jpg`;
-    if (stage === 4) return `images/creature/wolf_s4_${branch}.jpg`;
-    return 'images/creature/wolf_s1.jpg';
+    if (stage === 1) return 'images/creature/wolf/wolf_s1.jpg';
+    if (stage === 2) return `images/creature/wolf/wolf_s2_${branch}.jpg`;
+    if (stage === 3) return `images/creature/wolf/wolf_s3_${branch}.jpg`;
+    if (stage === 4) return `images/creature/wolf/wolf_s4_${branch}.jpg`;
+    return 'images/creature/wolf/wolf_s1.jpg';
 }
 
 function creatureCard(stage, branch, state) {
@@ -6769,7 +6769,7 @@ function creatureCard(stage, branch, state) {
         <img src="${imgPath}"
              alt="${stageLabel}"
              class="creature-card-img"
-             onerror="this.src='images/creature/wolf_s1.jpg'"/>
+             onerror="this.src='images/creature/wolf/wolf_s1.jpg'"/>
         <div class="creature-card-badge-top">
             <span class="creature-card-stage">${stageLabel}</span>
             <span class="creature-card-branch" style="color:${cfg.color}">${cfg.label}</span>
