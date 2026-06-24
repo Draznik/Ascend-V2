@@ -777,6 +777,20 @@ function migrateGameState() {
     if (gameState.skills.sagesse    && !gameState.skills.instinct)     { gameState.skills.instinct     = gameState.skills.sagesse;    delete gameState.skills.sagesse; }
     if (gameState.skills.discipline && !gameState.skills.vigueur)      { gameState.skills.vigueur      = gameState.skills.discipline; delete gameState.skills.discipline; }
     if (gameState.skills.maitrise   && !gameState.skills.agilite)      { gameState.skills.agilite      = gameState.skills.maitrise;   delete gameState.skills.maitrise; }
+    // V2.2.1 — migrer aussi les catégories des habitudes
+    const catMap = { endurance:'constitution', sagesse:'instinct', discipline:'vigueur', maitrise:'agilite' };
+    if (Array.isArray(gameState.habits)) {
+        gameState.habits.forEach(h => {
+            if (h.category && catMap[h.category]) h.category = catMap[h.category];
+            if (h.recommendedCategory && catMap[h.recommendedCategory]) h.recommendedCategory = catMap[h.recommendedCategory];
+        });
+    }
+    // V2.2.1 — migrer aussi les catégories des tâches
+    if (Array.isArray(gameState.tasks)) {
+        gameState.tasks.forEach(t => {
+            if (t.skill && catMap[t.skill]) t.skill = catMap[t.skill];
+        });
+    }
     if (!gameState.stats)     gameState.stats = { totalHabitsCompleted:0, perfectDays:0, longestStreak:0 };
     if (!gameState.sessions)  gameState.sessions = [];
     if (!gameState.habits)    gameState.habits = [];
@@ -2303,8 +2317,6 @@ function renderHabitsPage() {
             <div class="skills-row-container">
                 ${orbits}
             </div>`;
-        // Animation wolf — ne pas stopper, elle tourne en permanence
-        if (computeCreatureStage() === 1 && !_wolfAnimTimer) setTimeout(startWolfAnimation, 100);
     }
 
     const unEl = document.getElementById('habit-username');
@@ -6719,9 +6731,13 @@ function getCreatureStageProgress() {
              label: `${inStage.toLocaleString()} / ${needed.toLocaleString()} XP` };
 }
 
-// ── CREATURE CARD SYSTEM ─────────────────────────────────
-
-// Couleurs et config par branche
+function creatureSVG() {
+    const c = gameState.creature;
+    const stage = c ? computeCreatureStage() : 1;
+    const state = getCreatureState();
+    const branch = computeCreatureBranch();
+    return creatureCard(stage, branch, state);
+}
 const BRANCH_CONFIG = {
     balanced:     { color: '#ffffff', glow: 'rgba(255,255,255,0.5)', label: '✦ Équilibré',   holo: true  },
     constitution: { color: '#f5a623', glow: 'rgba(245,166,35,0.5)',  label: '🦴 Constitution', holo: false },
@@ -6732,21 +6748,11 @@ const BRANCH_CONFIG = {
 };
 
 function getCreatureCardPath(stage, branch) {
-    if (stage === 1) return null; // S1 uses animation frames
+    if (stage === 1) return 'images/creature/wolf_s1.jpg';
     if (stage === 2) return `images/creature/wolf_s2_${branch}.jpg`;
     if (stage === 3) return `images/creature/wolf_s3_${branch}.jpg`;
     if (stage === 4) return `images/creature/wolf_s4_${branch}.jpg`;
-    return null;
-}
-
-function creatureSVG() {
-    const c = gameState.creature;
-    const stage = c ? computeCreatureStage() : 1;
-    const state = getCreatureState();
-    const branch = computeCreatureBranch();
-
-    if (stage === 1) return creatureSVGStage1(state);
-    return creatureCard(stage, branch, state);
+    return 'images/creature/wolf_s1.jpg';
 }
 
 function creatureCard(stage, branch, state) {
@@ -6762,331 +6768,13 @@ function creatureCard(stage, branch, state) {
         <img src="${imgPath}"
              alt="${stageLabel}"
              class="creature-card-img"
-             onerror="this.src='images/wolf/wolf_s1_f1.png'"/>
+             onerror="this.src='images/creature/wolf_s1.jpg'"/>
         <div class="creature-card-badge-top">
             <span class="creature-card-stage">${stageLabel}</span>
             <span class="creature-card-branch" style="color:${cfg.color}">${cfg.label}</span>
         </div>
         ${state === 'sleeping' ? '<div class="creature-img-overlay-sleep">😴</div>' : ''}
     </div>`;
-}
-
-function creatureSVGStage1(state) {
-    // V2.2.1: 7-frame palindrome animation
-    // F1→F2→F3→F4→F5→F6→F7→F6→F5→F4→F3→F2→F1 (loop)
-    const stateClass = `creature-img-wrap creature-${state}`;
-    const eyeOverlay = state === 'sleeping'
-        ? '<div class="creature-img-overlay-sleep">😴</div>'
-        : state === 'radiant'
-        ? '<div class="creature-img-overlay-glow creature-aura-ring"></div>'
-        : '';
-    return `<div class="${stateClass}" id="wolf-anim-wrap" onclick="startWolfAnimation()" style="cursor:pointer;">
-        <img id="wolf-anim-img" src="images/wolf/wolf_s1_f1.png" alt="Louveteau" class="creature-img creature-img-stage1"/>
-        ${eyeOverlay}
-    </div>`;
-}
-
-// V2.2.1 — Wolf animation engine (palindrome loop)
-let _wolfAnimTimer = null;
-let _wolfAnimIdx   = 0;
-
-const WOLF_FRAMES = [
-    { src: 'images/wolf/wolf_s1_f1.png', duration: 3500 },
-    { src: 'images/wolf/wolf_s1_f2.png', duration: 900  },
-    { src: 'images/wolf/wolf_s1_f3.png', duration: 1000 },
-    { src: 'images/wolf/wolf_s1_f4.png', duration: 900  },
-    { src: 'images/wolf/wolf_s1_f5.png', duration: 1000 },
-    { src: 'images/wolf/wolf_s1_f6.png', duration: 900  },
-    { src: 'images/wolf/wolf_s1_f7.png', duration: 3500 },
-    { src: 'images/wolf/wolf_s1_f6.png', duration: 900  },
-    { src: 'images/wolf/wolf_s1_f5.png', duration: 1000 },
-    { src: 'images/wolf/wolf_s1_f4.png', duration: 900  },
-    { src: 'images/wolf/wolf_s1_f3.png', duration: 1000 },
-    { src: 'images/wolf/wolf_s1_f2.png', duration: 900  },
-];
-
-function startWolfAnimation() {
-    if (_wolfAnimTimer) return; // déjà en cours
-    _wolfAnimIdx = 0;
-    function tick() {
-        const img = document.getElementById('wolf-anim-img');
-        if (!img) { _wolfAnimTimer = null; return; }
-        const frame = WOLF_FRAMES[_wolfAnimIdx];
-        img.src = frame.src;
-        _wolfAnimIdx++;
-        if (_wolfAnimIdx < WOLF_FRAMES.length) {
-            // Frames restantes → continuer
-            _wolfAnimTimer = setTimeout(tick, frame.duration);
-        } else {
-            // Fin du cycle → revenir sur F1 et stopper
-            _wolfAnimTimer = setTimeout(() => {
-                const i = document.getElementById('wolf-anim-img');
-                if (i) i.src = 'images/wolf/wolf_s1_f1.png';
-                _wolfAnimTimer = null;
-            }, frame.duration);
-        }
-    }
-    tick();
-}
-
-function stopWolfAnimation() {
-    if (_wolfAnimTimer) { clearTimeout(_wolfAnimTimer); _wolfAnimTimer = null; }
-}
-
-// SVG fallback si images/wolf/ pas encore déployé
-function creatureSVGStage1Fallback(state) {
-    const eyeOpacity = state === 'sleeping' ? 0 : state === 'waiting' ? 0.5 : 1;
-    const auraOpacity = state === 'radiant' ? 0.5 : 0;
-    const bgColor = state === 'sleeping' ? '#111' : '#1a1a2e';
-    return `
-    <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" class="creature-svg creature-stage1 creature-${state}">
-        <circle cx="60" cy="62" r="46" fill="${bgColor}" opacity="0.7"/>
-        <circle cx="60" cy="62" r="46" fill="none" stroke="#f5c842" stroke-width="0.5" opacity="${auraOpacity * 0.6}"/>
-        ${state === 'radiant' ? `<circle cx="60" cy="62" r="50" fill="none" stroke="#f5c842" stroke-width="1.5" opacity="0.3" class="creature-aura-ring"/>` : ''}
-        <ellipse cx="60" cy="72" rx="24" ry="18" fill="#888" opacity="0.9"/>
-        <circle cx="60" cy="52" r="22" fill="#999"/>
-        <polygon points="38,36 44,20 52,36" fill="#888"/>
-        <polygon points="40,35 44,24 50,35" fill="#c67"/>
-        <polygon points="82,36 76,20 68,36" fill="#888"/>
-        <polygon points="80,35 76,24 70,35" fill="#c67"/>
-        <ellipse cx="60" cy="57" rx="10" ry="7" fill="#bbb"/>
-        <ellipse cx="60" cy="53" rx="3" ry="2" fill="#333"/>
-        ${state === 'sleeping'
-            ? `<path d="M51,47 Q54,50 57,47" stroke="#555" stroke-width="1.5" fill="none"/>
-               <path d="M63,47 Q66,50 69,47" stroke="#555" stroke-width="1.5" fill="none"/>`
-            : `<ellipse cx="54" cy="47" rx="4" ry="${state === 'waiting' ? 2.5 : 4}" fill="#f0d060" opacity="${eyeOpacity}"/>
-               <ellipse cx="66" cy="47" rx="4" ry="${state === 'waiting' ? 2.5 : 4}" fill="#f0d060" opacity="${eyeOpacity}"/>
-               <ellipse cx="54" cy="47" rx="2" ry="${state === 'waiting' ? 1.5 : 2.5}" fill="#111"/>
-               <ellipse cx="66" cy="47" rx="2" ry="${state === 'waiting' ? 1.5 : 2.5}" fill="#111"/>
-               <circle cx="55.5" cy="45.5" r="0.8" fill="#fff" opacity="${eyeOpacity}"/>
-               <circle cx="67.5" cy="45.5" r="0.8" fill="#fff" opacity="${eyeOpacity}"/>`
-        }
-        <path d="M78,82 Q95,75 90,90 Q85,100 75,92" stroke="#888" stroke-width="5" fill="none" stroke-linecap="round"/>
-        ${state === 'sleeping' ? `<text x="80" y="35" font-size="8" opacity="0.6">⭐</text>` : ''}
-    </svg>`;
-}
-
-function creatureSVGStage2(state) {
-    const eyeOpacity = state === 'sleeping' ? 0 : state === 'waiting' ? 0.6 : 1;
-    const auraOpacity = state === 'radiant' ? 1 : 0;
-    const bgColor = state === 'sleeping' ? '#0d0d1a' : '#1a1a2e';
-    // Compute dominant skill for forehead marking color
-    const skills = gameState.skills;
-    const total = Object.values(skills).reduce((s, sk) => s + sk.totalXP, 0);
-    const dominant = total > 0 ? Object.entries(skills).reduce((a, b) => a[1].totalXP > b[1].totalXP ? a : b)[0] : 'vigueur';
-    const markColor = SKILL_CONFIG[dominant]?.color || '#f5c842';
-    return `
-    <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg" class="creature-svg creature-stage2 creature-${state}">
-        <!-- Background -->
-        <circle cx="70" cy="72" r="56" fill="${bgColor}" opacity="0.7"/>
-        ${state === 'radiant' ? `<circle cx="70" cy="72" r="60" fill="none" stroke="#f5c842" stroke-width="1.5" opacity="0.4" class="creature-aura-ring"/>` : ''}
-        <!-- Body -->
-        <ellipse cx="70" cy="100" rx="28" ry="20" fill="#777"/>
-        <!-- Neck -->
-        <ellipse cx="70" cy="82" rx="14" ry="10" fill="#888"/>
-        <!-- Head -->
-        <circle cx="70" cy="62" r="26" fill="#999"/>
-        <!-- Ears -->
-        <polygon points="44,42 50,22 60,42" fill="#888"/>
-        <polygon points="46,41 50,26 58,41" fill="#b56"/>
-        <polygon points="96,42 90,22 80,42" fill="#888"/>
-        <polygon points="94,41 90,26 82,41" fill="#b56"/>
-        <!-- Muzzle -->
-        <ellipse cx="70" cy="68" rx="12" ry="8" fill="#bbb"/>
-        <!-- Nose -->
-        <ellipse cx="70" cy="63" rx="3.5" ry="2.5" fill="#333"/>
-        <!-- Eyes (gold, open) -->
-        ${state === 'sleeping'
-            ? `<path d="M59,56 Q63,60 67,56" stroke="#555" stroke-width="1.5" fill="none"/>
-               <path d="M73,56 Q77,60 81,56" stroke="#555" stroke-width="1.5" fill="none"/>`
-            : `<ellipse cx="63" cy="56" rx="5" ry="${state === 'waiting' ? 3 : 5}" fill="#f0c830" opacity="${eyeOpacity}"/>
-               <ellipse cx="77" cy="56" rx="5" ry="${state === 'waiting' ? 3 : 5}" fill="#f0c830" opacity="${eyeOpacity}"/>
-               <ellipse cx="63" cy="56" rx="2.5" ry="${state === 'waiting' ? 1.5 : 3}" fill="#111"/>
-               <ellipse cx="77" cy="56" rx="2.5" ry="${state === 'waiting' ? 1.5 : 3}" fill="#111"/>
-               <circle cx="64.5" cy="54" r="1" fill="#fff" opacity="${eyeOpacity}"/>
-               <circle cx="78.5" cy="54" r="1" fill="#fff" opacity="${eyeOpacity}"/>`
-        }
-        <!-- Forehead marking (dominant skill color) -->
-        <path d="M70,44 L66,50 L70,48 L74,50 Z" fill="${markColor}" opacity="0.85"/>
-        <!-- Legs (front, visible) -->
-        <ellipse cx="58" cy="112" rx="8" ry="5" fill="#777"/>
-        <ellipse cx="82" cy="112" rx="8" ry="5" fill="#777"/>
-        <!-- Tail -->
-        <path d="M92,108 Q115,95 108,112 Q102,124 90,116" stroke="#888" stroke-width="7" fill="none" stroke-linecap="round"/>
-        <!-- Two-tone fur (darker back) -->
-        <ellipse cx="70" cy="93" rx="25" ry="10" fill="#666" opacity="0.4"/>
-        ${state === 'sleeping' ? `
-        <text x="95" y="38" font-size="10" opacity="0.6">⭐</text>
-        <text x="30" y="35" font-size="7" opacity="0.5">✦</text>` : ''}
-    </svg>`;
-}
-
-function creatureSVGStage3(state, branch) {
-    // Stade 3 : silhouette complète, runes, lueur de compétence, début d'aura
-    const col = branch ? CREATURE_BRANCH_NAMES[branch]?.color || '#f5c842' : '#aaa';
-    const eyeOpacity = state === 'sleeping' ? 0 : 1;
-    return `
-    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" class="creature-svg creature-stage3 creature-${state}">
-        <!-- Aura glow -->
-        <circle cx="80" cy="82" r="68" fill="none" stroke="${col}" stroke-width="2" opacity="${state === 'radiant' ? 0.4 : 0.15}" class="creature-aura-ring"/>
-        <circle cx="80" cy="82" r="72" fill="none" stroke="${col}" stroke-width="1" opacity="${state === 'radiant' ? 0.25 : 0.07}"/>
-        <!-- Background -->
-        <circle cx="80" cy="82" r="64" fill="#0d0d1a" opacity="0.8"/>
-        <!-- Body (proud stance) -->
-        <ellipse cx="80" cy="118" rx="32" ry="22" fill="#666"/>
-        <!-- Shoulder runes (branch hint) -->
-        <ellipse cx="56" cy="96" rx="8" ry="5" fill="${col}" opacity="0.3"/>
-        <text x="51" y="99" font-size="8" fill="${col}" opacity="0.7">ᚠ</text>
-        <!-- Head -->
-        <circle cx="80" cy="68" r="28" fill="#888"/>
-        <!-- Ears -->
-        <polygon points="52,46 58,24 68,46" fill="#777"/>
-        <polygon points="54,45 58,28 66,45" fill="#a45"/>
-        <polygon points="108,46 102,24 92,46" fill="#777"/>
-        <polygon points="106,45 102,28 94,45" fill="#a45"/>
-        <!-- Muzzle -->
-        <ellipse cx="80" cy="76" rx="14" ry="9" fill="#aaa"/>
-        <!-- Nose -->
-        <ellipse cx="80" cy="70" rx="4" ry="3" fill="#222"/>
-        <!-- Eyes (colored glow) -->
-        ${state === 'sleeping'
-            ? `<path d="M68,62 Q73,67 78,62" stroke="#444" stroke-width="2" fill="none"/>
-               <path d="M82,62 Q87,67 92,62" stroke="#444" stroke-width="2" fill="none"/>`
-            : `<ellipse cx="72" cy="62" rx="6" ry="6" fill="${col}" opacity="${eyeOpacity}"/>
-               <ellipse cx="88" cy="62" rx="6" ry="6" fill="${col}" opacity="${eyeOpacity}"/>
-               <ellipse cx="72" cy="62" rx="3" ry="3.5" fill="#111"/>
-               <ellipse cx="88" cy="62" rx="3" ry="3.5" fill="#111"/>
-               <circle cx="73.5" cy="60" r="1.2" fill="#fff" opacity="${eyeOpacity}"/>
-               <circle cx="89.5" cy="60" r="1.2" fill="#fff" opacity="${eyeOpacity}"/>
-               <!-- Eye glow -->
-               <ellipse cx="72" cy="62" rx="7" ry="7" fill="${col}" opacity="0.2" class="creature-eye-glow"/>
-               <ellipse cx="88" cy="62" rx="7" ry="7" fill="${col}" opacity="0.2" class="creature-eye-glow"/>`
-        }
-        <!-- Legs -->
-        <ellipse cx="65" cy="132" rx="9" ry="6" fill="#666"/>
-        <ellipse cx="95" cy="132" rx="9" ry="6" fill="#666"/>
-        <!-- Tail -->
-        <path d="M106,124 Q132,108 126,128 Q120,144 106,134" stroke="#777" stroke-width="9" fill="none" stroke-linecap="round"/>
-        <!-- Dark fur overlay -->
-        <ellipse cx="80" cy="108" rx="28" ry="12" fill="#555" opacity="0.35"/>
-        ${state === 'sleeping' ? `<text x="108" y="40" font-size="12" opacity="0.5">⭐</text>` : ''}
-    </svg>`;
-}
-
-function creatureSVGStage4(state, branch) {
-    // Stade 4 : Forme Mythique selon la branche (SVG provisoire, remplacé par images Leonardo)
-    const b = CREATURE_BRANCH_NAMES[branch || 'primal'];
-    const col = b?.color || '#f5c842';
-    const col2 = branch === 'power' ? '#cc8800' : branch === 'arcane' ? '#ffffff' :
-                 branch === 'legion' ? '#888888' : branch === 'spirit' ? '#ffd6f0' :
-                 branch === 'shadow' ? '#111111' : '#aaaaff';
-    return `
-    <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" class="creature-svg creature-stage4 creature-${state}">
-        <!-- Legendary aura layers -->
-        <circle cx="90" cy="92" r="84" fill="${col}" opacity="0.06" class="creature-aura-outer"/>
-        <circle cx="90" cy="92" r="76" fill="${col}" opacity="0.1" class="creature-aura-ring"/>
-        <circle cx="90" cy="92" r="68" fill="none" stroke="${col}" stroke-width="2.5" opacity="0.4" class="creature-aura-ring"/>
-        <!-- Shimmer sweep -->
-        <rect x="0" y="0" width="180" height="180" fill="url(#shimmer_${branch})" opacity="0.15" class="creature-shimmer"/>
-        <defs>
-            <linearGradient id="shimmer_${branch}" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="transparent"/>
-                <stop offset="50%" stop-color="${col}" stop-opacity="0.4"/>
-                <stop offset="100%" stop-color="transparent"/>
-            </linearGradient>
-        </defs>
-        <!-- Body -->
-        <circle cx="90" cy="95" r="72" fill="#0a0a18" opacity="0.85"/>
-        <!-- Main body -->
-        <ellipse cx="90" cy="130" rx="36" ry="26" fill="#555"/>
-        <!-- Head -->
-        <circle cx="90" cy="76" r="32" fill="#777"/>
-        <!-- Branch-specific features -->
-        ${branch === 'power' ? `
-            <!-- Armored shoulders -->
-            <ellipse cx="58" cy="104" rx="14" ry="8" fill="${col}" opacity="0.6"/>
-            <ellipse cx="122" cy="104" rx="14" ry="8" fill="${col}" opacity="0.6"/>
-            <!-- Battle scar -->
-            <path d="M78,60 L85,72" stroke="${col2}" stroke-width="1.5" opacity="0.8"/>` : ''}
-        ${branch === 'arcane' ? `
-            <!-- Rune constellation -->
-            <text x="60" y="95" font-size="10" fill="${col}" opacity="0.7">ᚠ</text>
-            <text x="112" y="95" font-size="10" fill="${col}" opacity="0.7">ᚨ</text>
-            <text x="86" y="55" font-size="10" fill="${col}" opacity="0.7">ᛟ</text>
-            <!-- Translucent effect -->
-            <circle cx="90" cy="76" r="32" fill="${col}" opacity="0.06"/>` : ''}
-        ${branch === 'legion' ? `
-            <!-- Shoulder plate -->
-            <path d="M56,96 Q50,88 62,84 L76,90 Z" fill="${col}" opacity="0.5"/>
-            <path d="M124,96 Q130,88 118,84 L104,90 Z" fill="${col}" opacity="0.5"/>` : ''}
-        ${branch === 'spirit' ? `
-            <!-- Floating petals -->
-            <ellipse cx="50" cy="70" rx="6" ry="3" fill="${col}" opacity="0.5" transform="rotate(-30,50,70)"/>
-            <ellipse cx="130" cy="65" rx="5" ry="2.5" fill="${col}" opacity="0.4" transform="rotate(20,130,65)"/>
-            <ellipse cx="115" cy="105" rx="4" ry="2" fill="${col}" opacity="0.35" transform="rotate(45,115,105)"/>` : ''}
-        ${branch === 'shadow' ? `
-            <!-- Shadow merge (dark overlay at bottom) -->
-            <ellipse cx="90" cy="140" rx="50" ry="20" fill="#000" opacity="0.6"/>
-            <!-- Only eyes visible through shadow -->` : ''}
-        ${branch === 'primal' ? `
-            <!-- All-color marks -->
-            <text x="64" y="100" font-size="8" fill="#ff6b6b" opacity="0.7">ᚠ</text>
-            <text x="110" y="100" font-size="8" fill="#4ecdc4" opacity="0.7">ᚨ</text>
-            <text x="87" y="55" font-size="8" fill="#9f7aea" opacity="0.7">ᛟ</text>
-            <text x="64" y="120" font-size="8" fill="#f5c842" opacity="0.7">ᚢ</text>` : ''}
-        <!-- Ears -->
-        <polygon points="58,50 64,26 76,50" fill="#666"/>
-        <polygon points="60,49 64,30 74,49" fill="#955"/>
-        <polygon points="122,50 116,26 104,50" fill="#666"/>
-        <polygon points="120,49 116,30 106,49" fill="#955"/>
-        <!-- Muzzle -->
-        <ellipse cx="90" cy="84" rx="15" ry="10" fill="#999"/>
-        <!-- Nose -->
-        <ellipse cx="90" cy="78" rx="4.5" ry="3.5" fill="#222"/>
-        <!-- Eyes (full glow) -->
-        ${state === 'sleeping'
-            ? `<path d="M76,70 Q82,76 88,70" stroke="#333" stroke-width="2" fill="none"/>
-               <path d="M92,70 Q98,76 104,70" stroke="#333" stroke-width="2" fill="none"/>`
-            : `<ellipse cx="81" cy="70" rx="7" ry="7" fill="${col}" opacity="0.9"/>
-               <ellipse cx="99" cy="70" rx="7" ry="7" fill="${col}" opacity="0.9"/>
-               <ellipse cx="81" cy="70" rx="3.5" ry="4" fill="#111"/>
-               <ellipse cx="99" cy="70" rx="3.5" ry="4" fill="#111"/>
-               <circle cx="82.5" cy="68" r="1.5" fill="#fff"/>
-               <circle cx="100.5" cy="68" r="1.5" fill="#fff"/>
-               <ellipse cx="81" cy="70" rx="9" ry="9" fill="${col}" opacity="0.25" class="creature-eye-glow"/>
-               <ellipse cx="99" cy="70" rx="9" ry="9" fill="${col}" opacity="0.25" class="creature-eye-glow"/>`
-        }
-        <!-- Legs -->
-        <ellipse cx="73" cy="148" rx="10" ry="7" fill="#555"/>
-        <ellipse cx="107" cy="148" rx="10" ry="7" fill="#555"/>
-        <!-- Tail -->
-        <path d="M120,138 Q148,118 142,142 Q136,160 120,150" stroke="#666" stroke-width="10" fill="none" stroke-linecap="round"/>
-        <!-- Crown badge for mythical form -->
-        <text x="78" y="38" font-size="14" opacity="0.9">👑</text>
-    </svg>`;
-}
-
-// Modal révélation de branche (appelé une seule fois au passage stade 3)
-function showBranchRevealModal() {
-    const c = gameState.creature;
-    if (!c?.branch) return;
-    const b = CREATURE_BRANCH_NAMES[c.branch];
-    if (!b) return;
-    // Don't show if already seen
-    if (c._branchRevealSeen) return;
-    c._branchRevealSeen = true;
-    saveGameState();
-    showModal({
-        type: 'success',
-        title: '✨ Ta voie se révèle...',
-        body: `<div style="text-align:center;padding:8px 0">
-            <div style="font-size:2.5rem;margin-bottom:12px">${b.icon}</div>
-            <div style="color:${b.color};font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;margin-bottom:8px">${b.name}</div>
-            <div style="color:var(--text-dim);font-size:0.82rem;font-style:italic">Au fil de tes actions, une voie s'est tracée.<br>Ton loup est devenu ${b.name}.</div>
-        </div>`,
-        confirmLabel: 'Je vois.',
-        onConfirm: () => { renderUI(); }
-    });
 }
 
 // ── CREATURE UI ──────────────────────────────────────────
@@ -8160,8 +7848,6 @@ renderDebugToggleBtn();
 const savedTab = localStorage.getItem('lifeRPG_tab_v3') || 'habits';
 switchTab(savedTab);
 
-// V2.2.1 — Start wolf animation immediately (runs forever)
-if (computeCreatureStage() === 1) setTimeout(startWolfAnimation, 200);
 
 if (typeof updateMoodFab === 'function') updateMoodFab();
 if (typeof checkOnboarding === 'function') checkOnboarding();
