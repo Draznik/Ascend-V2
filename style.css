@@ -1353,14 +1353,34 @@ button { font-family: 'Outfit', sans-serif; cursor: pointer; transition: all 0.2
 
 /* ── Profil small avatar ── */
 .profil-avatar-small {
-    width: 60px; height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(145deg, #0e1830, #1a2a50);
-    border: 2px solid var(--gold-dim);
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 10px;
-    box-shadow: 0 0 18px rgba(245,200,66,0.2);
-    overflow: hidden;
+    width: auto;
+    height: auto;
+    border-radius: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: none !important;
+    overflow: visible;
+}
+
+#profil-avatar-small {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+#profil-avatar-small .creature-img-wrap {
+    margin: 0 !important;
+}
+
+#profil-avatar-small img {
+    border: none !important;
+    border-radius: 0 !important;
 }
 .profil-avatar-small .superman-s {
     width: 36px; height: 40px;

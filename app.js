@@ -14,23 +14,23 @@
 //  CONSTANTS
 // ─────────────────────────────────────────────
 const SKILL_CONFIG = {
-    endurance:  { icon: '💪', name: 'Endurance',  color: '#ff6b6b' },
-    sagesse:    { icon: '📚', name: 'Sagesse',    color: '#4ecdc4' },
-    discipline: { icon: '🏠', name: 'Discipline', color: '#f5c842' },
-    serenite:   { icon: '🧘', name: 'Sérénité',   color: '#9f7aea' },
-    maitrise:   { icon: '⚡', name: 'Maîtrise',   color: '#3d8ef0' }
+    constitution: { icon: '🦴', name: 'Constitution', color: '#ff6b6b' },
+    instinct:     { icon: '🌙', name: 'Instinct',     color: '#4ecdc4' },
+    vigueur:      { icon: '🔥', name: 'Vigueur',      color: '#f5c842' },
+    serenite:     { icon: '🧘', name: 'Sérénité',     color: '#9f7aea' },
+    agilite:      { icon: '⚡', name: 'Agilité',      color: '#3d8ef0' }
 };
 
 const SKILL_TOOLTIPS = {
-    endurance: 'Sport, cardio, musculation,\nyoga dynamique, vélo, marche...',
-    sagesse:   'Lecture, cours en ligne,\npodcasts éducatifs, prise de notes...',
-    discipline:'Habitudes quotidiennes,\nroutines, constance...',
-    serenite:  'Méditation, respiration,\njournal, marche en nature...',
-    maitrise:  'Deep work, code, écriture,\napprentissage concentré...'
+    constitution: 'Sport, cardio, musculation,\nyoga dynamique, vélo, marche...',
+    instinct:     'Lecture, cours en ligne,\npodcasts éducatifs, prise de notes...',
+    vigueur:      'Habitudes quotidiennes,\nroutines, constance, ténacité...',
+    serenite:     'Méditation, respiration,\njournal, marche en nature...',
+    agilite:      'Deep work, code, écriture,\napprentissage concentré...'
 };
 
 const SESSION_XP_CURVES = {
-    endurance: [
+    constitution: [
         { min:150, xp:135 }, { min:75, xp:110 },
         { min:45,  xp:80  }, { min:20, xp:50  }, { min:0, xp:0 }
     ],
@@ -38,17 +38,17 @@ const SESSION_XP_CURVES = {
         { min:90, xp:110 }, { min:45, xp:90 },
         { min:20, xp:70  }, { min:10, xp:50 }, { min:0, xp:0 }
     ],
-    sagesse: [
+    instinct: [
         { min:120, xp:120 }, { min:60, xp:100 },
         { min:30,  xp:75  }, { min:15, xp:50  }, { min:0, xp:0 }
     ],
-    maitrise: [
+    agilite: [
         { min:120, xp:140 }, { min:75, xp:115 },
         { min:45,  xp:85  }, { min:25, xp:50  }, { min:0, xp:0 }
     ]
 };
 
-const SESSION_THRESHOLDS = { endurance:20, serenite:10, sagesse:15, maitrise:25 };
+const SESSION_THRESHOLDS = { constitution:20, serenite:10, instinct:15, agilite:25 };
 const HABIT_XP    = 15;
 const STORAGE_KEY = 'lifeRPGState_v3';
 
@@ -153,21 +153,21 @@ function getEclatTypeForAct(act) {
 // WEAPON_POOLS removed V2.1
 
 const BOSS_DATA = [
-    { id:'b01', name:'Sanglier Géant',              act:1, actName:'Les Terres Sauvages', skill:'endurance', xpBase:3500,  timerDays:7,  img:'images/boar_acte_1.webp',   emoji:'🐗', lore:'Une bête ancestrale qui broie les os des imprudents.' },
-    { id:'b02', name:'Brigand des Chemins',          act:1, actName:'Les Terres Sauvages', skill:'discipline',xpBase:3500,  timerDays:7,  img:'images/bandit_acte_1.webp',   emoji:'🗡️', lore:'Il rôde aux carrefours, attendant les voyageurs seuls.' },
-    { id:'b03', name:'Ours des Cimes',               act:1, actName:'Les Terres Sauvages', skill:'maitrise', xpBase:3500,  timerDays:7,  img:'images/ours_acte_1.webp',     emoji:'🐻', lore:'Gardien des hauteurs, personne ne passe sans son accord.' },
-    { id:'b04', name:'Loup Alpha',                   act:2, actName:'La Forêt Profonde',   skill:'sagesse', xpBase:4500,  timerDays:10, img:'images/loup_acte_2.webp',     emoji:'🐺', lore:'Ses yeux dorés voient à travers le brouillard.' },
+    { id:'b01', name:'Sanglier Géant',              act:1, actName:'Les Terres Sauvages', skill:'constitution', xpBase:3500,  timerDays:7,  img:'images/boar_acte_1.webp',   emoji:'🐗', lore:'Une bête ancestrale qui broie les os des imprudents.' },
+    { id:'b02', name:'Brigand des Chemins',          act:1, actName:'Les Terres Sauvages', skill:'vigueur',xpBase:3500,  timerDays:7,  img:'images/bandit_acte_1.webp',   emoji:'🗡️', lore:'Il rôde aux carrefours, attendant les voyageurs seuls.' },
+    { id:'b03', name:'Ours des Cimes',               act:1, actName:'Les Terres Sauvages', skill:'agilite', xpBase:3500,  timerDays:7,  img:'images/ours_acte_1.webp',     emoji:'🐻', lore:'Gardien des hauteurs, personne ne passe sans son accord.' },
+    { id:'b04', name:'Loup Alpha',                   act:2, actName:'La Forêt Profonde',   skill:'instinct', xpBase:4500,  timerDays:10, img:'images/loup_acte_2.webp',     emoji:'🐺', lore:'Ses yeux dorés voient à travers le brouillard.' },
     { id:'b05', name:'Reine des Guêpes',             act:2, actName:'La Forêt Profonde',   skill:'serenite',  xpBase:4500,  timerDays:10, img:'images/guêpe_acte_2.webp',   emoji:'🐝', lore:'Son bourdonnement annonce la fin.' },
-    { id:'b06', name:'Géant de Pierre',              act:2, actName:'La Forêt Profonde',   skill:'endurance',xpBase:4500,  timerDays:10, img:'images/GOLEM_ACTE_2.webp',   emoji:'🗿', lore:'Né de la roche ancienne, il ne connaît pas la fatigue.' },
-    { id:'b07', name:'Chevalier Maudit',             act:3, actName:'Les Terres Brûlées',  skill:'maitrise',  xpBase:5500,  timerDays:14, img:'images/chevalier_acte_3.webp',emoji:'⚔️',lore:"Condamné à se battre pour l'éternité." },
-    { id:'b08', name:'Sorcière des Cendres',         act:3, actName:'Les Terres Brûlées',  skill:'sagesse',   xpBase:5500,  timerDays:14, img:'',                          emoji:'🔥', lore:'Elle transforme tout ce qu\'elle touche en cendres.' },
-    { id:'b09', name:'Seigneur de Guerre',           act:3, actName:'Les Terres Brûlées',  skill:'discipline', xpBase:5500,  timerDays:14, img:'',                          emoji:'💀', lore:"Son armée n'a jamais connu la défaite." },
+    { id:'b06', name:'Géant de Pierre',              act:2, actName:'La Forêt Profonde',   skill:'constitution',xpBase:4500,  timerDays:10, img:'images/GOLEM_ACTE_2.webp',   emoji:'🗿', lore:'Né de la roche ancienne, il ne connaît pas la fatigue.' },
+    { id:'b07', name:'Chevalier Maudit',             act:3, actName:'Les Terres Brûlées',  skill:'agilite',  xpBase:5500,  timerDays:14, img:'images/chevalier_acte_3.webp',emoji:'⚔️',lore:"Condamné à se battre pour l'éternité." },
+    { id:'b08', name:'Sorcière des Cendres',         act:3, actName:'Les Terres Brûlées',  skill:'instinct',   xpBase:5500,  timerDays:14, img:'',                          emoji:'🔥', lore:'Elle transforme tout ce qu\'elle touche en cendres.' },
+    { id:'b09', name:'Seigneur de Guerre',           act:3, actName:'Les Terres Brûlées',  skill:'vigueur', xpBase:5500,  timerDays:14, img:'',                          emoji:'💀', lore:"Son armée n'a jamais connu la défaite." },
     { id:'b10', name:'Effigie Rampante',             act:4, actName:"L'Abîsse",            skill:'serenite',  xpBase:6500,  timerDays:21, img:'',                          emoji:'👁️', lore:'Elle rampe dans l\'ombre et mange les esprits.' },
-    { id:'b11', name:'Loup-Garou des Ruines',        act:4, actName:"L'Abîsse",            skill:'endurance', xpBase:6500,  timerDays:21, img:'images/loup_garou_acte_4.webp',emoji:'🌕',lore:'La pleine lune réveille une rage sans fond.' },
-    { id:'b12', name:"Troll de l'Abîsse",            act:4, actName:"L'Abîsse",            skill:'discipline',xpBase:6500,  timerDays:21, img:'',                          emoji:'🧌', lore:'Son corps est fait de roche et de ténèbres.' },
-    { id:'b13', name:'Kraken des Marais',            act:4, actName:"L'Abîsse",            skill:'sagesse',  xpBase:6500,  timerDays:21, img:'',                          emoji:'🦑', lore:'Ses tentacules s\'étendent sur des kilomètres.' },
-    { id:'b14', name:'Ignareth le Dragon de Cendre', act:5, actName:'Le Cosmos',           skill:'endurance', xpBase:8000,  timerDays:30, img:'images/ignareth_acte_5.webp',emoji:'🐉', lore:'Son souffle transforme les montagnes en poussière.' },
-    { id:'b15', name:"Veyral l'Ange Déchu",          act:5, actName:'Le Cosmos',           skill:'maitrise',  xpBase:8000,  timerDays:30, img:'',                          emoji:'👼', lore:"Il a choisi la chute plutôt que l'obéissance." },
+    { id:'b11', name:'Loup-Garou des Ruines',        act:4, actName:"L'Abîsse",            skill:'constitution', xpBase:6500,  timerDays:21, img:'images/loup_garou_acte_4.webp',emoji:'🌕',lore:'La pleine lune réveille une rage sans fond.' },
+    { id:'b12', name:"Troll de l'Abîsse",            act:4, actName:"L'Abîsse",            skill:'vigueur',xpBase:6500,  timerDays:21, img:'',                          emoji:'🧌', lore:'Son corps est fait de roche et de ténèbres.' },
+    { id:'b13', name:'Kraken des Marais',            act:4, actName:"L'Abîsse",            skill:'instinct',  xpBase:6500,  timerDays:21, img:'',                          emoji:'🦑', lore:'Ses tentacules s\'étendent sur des kilomètres.' },
+    { id:'b14', name:'Ignareth le Dragon de Cendre', act:5, actName:'Le Cosmos',           skill:'constitution', xpBase:8000,  timerDays:30, img:'images/ignareth_acte_5.webp',emoji:'🐉', lore:'Son souffle transforme les montagnes en poussière.' },
+    { id:'b15', name:"Veyral l'Ange Déchu",          act:5, actName:'Le Cosmos',           skill:'agilite',  xpBase:8000,  timerDays:30, img:'',                          emoji:'👼', lore:"Il a choisi la chute plutôt que l'obéissance." },
     { id:'b16', name:'Kharoth le Titan Oublié',      act:5, actName:'Le Cosmos',           skill:'serenite',xpBase:8000,  timerDays:30, img:'',                          emoji:'⛰️', lore:'Il dormait depuis la naissance des étoiles.' },
     { id:'b17', name:"L'Innommable",                 act:5, actName:'Le Cosmos',           skill:'all',       xpBase:0,     timerDays:66, img:'images/l_innomable.webp',    emoji:'🌑', lore:"Il n'a pas de nom. Il est la fin.", isFinal:true, conditionBased:true }
 ];
@@ -177,15 +177,15 @@ const BOSS_DATA = [
 
 // ── Recommended habits (pre-loaded, science-based) ──
 const RECOMMENDED_HABITS = [
-    { name: 'Lever/coucher heures fixes ±30min', category: 'discipline', icon: '🌙' },
-    { name: 'Marche 20 min',                     category: 'endurance',  icon: '🚶' },
-    { name: 'Boire 1.5L d\'eau',                 category: 'discipline', icon: '💧' },
-    { name: 'Lecture 15 min',                    category: 'sagesse',    icon: '📖' },
+    { name: 'Lever/coucher heures fixes ±30min', category: 'vigueur', icon: '🌙' },
+    { name: 'Marche 20 min',                     category: 'constitution',  icon: '🚶' },
+    { name: 'Boire 1.5L d\'eau',                 category: 'vigueur', icon: '💧' },
+    { name: 'Lecture 15 min',                    category: 'instinct',    icon: '📖' },
     { name: 'Lumière naturelle le matin (10min)', category: 'serenite',  icon: '☀️' },
     { name: '5 min sans écran au réveil',         category: 'serenite',  icon: '📵' },
     { name: '1 interaction sociale positive',     category: 'serenite',  icon: '🤝' },
-    { name: 'Pas de sucre ajouté le matin',       category: 'discipline', icon: '🚫' },
-    { name: 'Légumes/fibres dans un repas',       category: 'discipline', icon: '🥦' }
+    { name: 'Pas de sucre ajouté le matin',       category: 'vigueur', icon: '🚫' },
+    { name: 'Légumes/fibres dans un repas',       category: 'vigueur', icon: '🥦' }
 ];
 
 // ── Quest pools ──
@@ -199,14 +199,14 @@ const QUEST_POOLS = {
             { id:'d_disc_5', title:'Constance absolue',   desc:'Maintiens le streak sur au moins 1 habitude', type:'habit_any_streak', target:1, xp:30 }
         ],
         endurance: [
-            { id:'d_end_1', title:'Mise en jambes',  desc:'Log une session Endurance de 20–44 min', type:'session_range', skill:'endurance', minMins:20, maxMins:44, xp:60  },
-            { id:'d_end_2', title:'Séance solide',   desc:'Log une session Endurance de 45–74 min', type:'session_range', skill:'endurance', minMins:45, maxMins:74, xp:90  },
-            { id:'d_end_3', title:'Effort long',     desc:'Log une session Endurance de 75 min+',   type:'session_range', skill:'endurance', minMins:75, maxMins:9999, xp:120 }
+            { id:'d_end_1', title:'Mise en jambes',  desc:'Log une session Endurance de 20–44 min', type:'session_range', skill:'constitution', minMins:20, maxMins:44, xp:60  },
+            { id:'d_end_2', title:'Séance solide',   desc:'Log une session Endurance de 45–74 min', type:'session_range', skill:'constitution', minMins:45, maxMins:74, xp:90  },
+            { id:'d_end_3', title:'Effort long',     desc:'Log une session Endurance de 75 min+',   type:'session_range', skill:'constitution', minMins:75, maxMins:9999, xp:120 }
         ],
         sagesse: [
-            { id:'d_sag_1', title:'Lecteur du matin', desc:'Log 15–29 min de lecture ou apprentissage', type:'session_range', skill:'sagesse', minMins:15, maxMins:29, xp:60  },
-            { id:'d_sag_2', title:'Session de savoir', desc:'Log 30–59 min de lecture ou cours',         type:'session_range', skill:'sagesse', minMins:30, maxMins:59, xp:90  },
-            { id:'d_sag_3', title:'Apprentissage profond', desc:'Log 60 min+ de lecture ou cours en ligne', type:'session_range', skill:'sagesse', minMins:60, maxMins:9999, xp:120 }
+            { id:'d_sag_1', title:'Lecteur du matin', desc:'Log 15–29 min de lecture ou apprentissage', type:'session_range', skill:'instinct', minMins:15, maxMins:29, xp:60  },
+            { id:'d_sag_2', title:'Session de savoir', desc:'Log 30–59 min de lecture ou cours',         type:'session_range', skill:'instinct', minMins:30, maxMins:59, xp:90  },
+            { id:'d_sag_3', title:'Apprentissage profond', desc:'Log 60 min+ de lecture ou cours en ligne', type:'session_range', skill:'instinct', minMins:60, maxMins:9999, xp:120 }
         ],
         serenite: [
             { id:'d_ser_1', title:'Instant calme',   desc:'Log 10–19 min de méditation ou respiration', type:'session_range', skill:'serenite', minMins:10, maxMins:19, xp:60  },
@@ -214,23 +214,23 @@ const QUEST_POOLS = {
             { id:'d_ser_3', title:'Sérénité totale', desc:'Log 45 min+ de méditation ou marche en nature', type:'session_range', skill:'serenite', minMins:45, maxMins:9999, xp:120 }
         ],
         maitrise: [
-            { id:'d_mai_1', title:'1 Pomodoro',       desc:'Log 25–44 min de deep work (1 Pomodoro)',  type:'session_range', skill:'maitrise', minMins:25, maxMins:44, xp:60  },
-            { id:'d_mai_2', title:'Session de flow',  desc:'Log 45–74 min de deep work concentré',     type:'session_range', skill:'maitrise', minMins:45, maxMins:74, xp:90  },
-            { id:'d_mai_3', title:'Maîtrise totale',  desc:'Log 75 min+ de deep work',                 type:'session_range', skill:'maitrise', minMins:75, maxMins:9999, xp:120 }
+            { id:'d_mai_1', title:'1 Pomodoro',       desc:'Log 25–44 min de deep work (1 Pomodoro)',  type:'session_range', skill:'agilite', minMins:25, maxMins:44, xp:60  },
+            { id:'d_mai_2', title:'Session de flow',  desc:'Log 45–74 min de deep work concentré',     type:'session_range', skill:'agilite', minMins:45, maxMins:74, xp:90  },
+            { id:'d_mai_3', title:'Maîtrise totale',  desc:'Log 75 min+ de deep work',                 type:'session_range', skill:'agilite', minMins:75, maxMins:9999, xp:120 }
         ]
     },
     weekly: {
         endurance: [
-            { id:'w_end_1', title:'Semaine d\'endurance', desc:'Log 2 sessions Endurance de 45 min minimum cette semaine', type:'week_sessions_min', skill:'endurance', count:2, minMins:45, xp:250 }
+            { id:'w_end_1', title:'Semaine d\'constitution', desc:'Log 2 sessions Endurance de 45 min minimum cette semaine', type:'week_sessions_min', skill:'constitution', count:2, minMins:45, xp:250 }
         ],
         sagesse: [
-            { id:'w_sag_1', title:'Semaine du savoir',  desc:'Log 3 sessions Sagesse cette semaine',  type:'week_sessions_count', skill:'sagesse', count:3, xp:250 }
+            { id:'w_sag_1', title:'Semaine du savoir',  desc:'Log 3 sessions Sagesse cette semaine',  type:'week_sessions_count', skill:'instinct', count:3, xp:250 }
         ],
         serenite: [
             { id:'w_ser_1', title:'Semaine sereine',    desc:'Log 4 sessions Sérénité cette semaine (fréquence > durée)', type:'week_sessions_count', skill:'serenite', count:4, xp:250 }
         ],
         maitrise: [
-            { id:'w_mai_1', title:'Semaine de maîtrise', desc:'Log 2 sessions Maîtrise consécutives cette semaine', type:'week_sessions_min', skill:'maitrise', count:2, minMins:45, xp:250 }
+            { id:'w_mai_1', title:'Semaine de maîtrise', desc:'Log 2 sessions Maîtrise consécutives cette semaine', type:'week_sessions_min', skill:'agilite', count:2, minMins:45, xp:250 }
         ],
         discipline: [
             { id:'w_disc_1', title:'Semaine disciplinée', desc:'Complète toutes tes habitudes recommandées 3 jours cette semaine', type:'week_reco_days', count:3, xp:300 }
@@ -240,11 +240,11 @@ const QUEST_POOLS = {
 
 // Quest XP goes to skill (or discipline for habit quests)
 const QUEST_SKILL_MAP = {
-    discipline: 'discipline',
-    endurance:  'endurance',
-    sagesse:    'sagesse',
+    discipline: 'vigueur',
+    endurance:  'constitution',
+    sagesse:    'instinct',
     serenite:   'serenite',
-    maitrise:   'maitrise'
+    maitrise:   'agilite'
 };
 
 // ─────────────────────────────────────────────
@@ -771,7 +771,12 @@ function saveGameState() {
 function migrateGameState() {
     if (!gameState) return;
     if (!gameState.username)  gameState.username = 'Hero';
-    if (!gameState.skills)    gameState.skills = { endurance:{level:1,currentXP:0,totalXP:0}, sagesse:{level:1,currentXP:0,totalXP:0}, discipline:{level:1,currentXP:0,totalXP:0}, serenite:{level:1,currentXP:0,totalXP:0}, maitrise:{level:1,currentXP:0,totalXP:0} };
+    if (!gameState.skills)    gameState.skills = { constitution:{level:1,currentXP:0,totalXP:0}, instinct:{level:1,currentXP:0,totalXP:0}, vigueur:{level:1,currentXP:0,totalXP:0}, serenite:{level:1,currentXP:0,totalXP:0}, agilite:{level:1,currentXP:0,totalXP:0} };
+    // V2.2.1 — migration anciens noms → nouveaux noms aptitudes bête
+    if (gameState.skills.endurance  && !gameState.skills.constitution) { gameState.skills.constitution = gameState.skills.endurance;  delete gameState.skills.endurance; }
+    if (gameState.skills.sagesse    && !gameState.skills.instinct)     { gameState.skills.instinct     = gameState.skills.sagesse;    delete gameState.skills.sagesse; }
+    if (gameState.skills.discipline && !gameState.skills.vigueur)      { gameState.skills.vigueur      = gameState.skills.discipline; delete gameState.skills.discipline; }
+    if (gameState.skills.maitrise   && !gameState.skills.agilite)      { gameState.skills.agilite      = gameState.skills.maitrise;   delete gameState.skills.maitrise; }
     if (!gameState.stats)     gameState.stats = { totalHabitsCompleted:0, perfectDays:0, longestStreak:0 };
     if (!gameState.sessions)  gameState.sessions = [];
     if (!gameState.habits)    gameState.habits = [];
@@ -873,7 +878,7 @@ function migrateGameState() {
 
     gameState.habits.forEach(h => {
         if (!h.history) h.history = [];
-        if (!h.category) h.category = h.isRecommended ? (h.recommendedCategory || 'discipline') : 'discipline';
+        if (!h.category) h.category = h.isRecommended ? (h.recommendedCategory || 'vigueur') : 'vigueur';
         h.xpReward = HABIT_XP;
         if (!h.streak)        h.streak = 0;
         if (!h.lastCompleted) h.lastCompleted = null;
@@ -1041,7 +1046,7 @@ function _checkDailyResetWithDate(now) {
 // Weighted random pick for weekly quest skill
 // Lowest skill → 40%, 2nd lowest → 20%, rest → ~13% each
 function pickWeeklySkill() {
-    const skills = ['endurance','sagesse','serenite','maitrise','discipline'];
+    const skills = ['constitution','instinct','serenite','agilite','vigueur'];
     const levels = skills.map(k => ({ key: k, level: gameState.skills[k].level }));
     levels.sort((a,b) => a.level - b.level);
 
@@ -1103,7 +1108,7 @@ function generateDailyQuests(now) {
 
         // Pick 3 daily quests: 1 discipline + 1 random session skill + 1 varied
         const discPool = QUEST_POOLS.daily.discipline;
-        const sessionSkills = ['endurance','sagesse','serenite','maitrise'];
+        const sessionSkills = ['constitution','instinct','serenite','agilite'];
         const skill1 = sessionSkills[seededRand(todayStr+'s1', sessionSkills.length)];
         const skill2 = sessionSkills[seededRand(todayStr+'s2', sessionSkills.length)] !== skill1
             ? sessionSkills[seededRand(todayStr+'s2', sessionSkills.length)]
@@ -1150,7 +1155,7 @@ function generateDailyQuests(now) {
             const count = r < 25 ? 3 : (r < 75 ? 4 : 5); // 25%/50%/25%
 
             // Pick N unique skills
-            const allSkills = ['endurance','sagesse','serenite','maitrise','discipline'];
+            const allSkills = ['constitution','instinct','serenite','agilite','vigueur'];
             const shuffled = [...allSkills];
             for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = seededRand(currentWeek + '_shuf' + i, i + 1);
@@ -1359,7 +1364,7 @@ function checkQuestProgress() {
         const alreadyDone = (gameState.quests.completedIds||[]).includes(quest.id);
         if (!alreadyDone && isQuestComplete(quest)) {
             // Award XP
-            const skillKey = quest.skill || 'discipline';
+            const skillKey = quest.skill || 'vigueur';
             gainSkillXP(skillKey, quest.xp, `Quête — ${quest.title}`);
             if (!gameState.quests.completedIds) gameState.quests.completedIds = [];
             gameState.quests.completedIds.push(quest.id);
@@ -1380,7 +1385,7 @@ function checkQuestProgress() {
 
 // Get quest skill key
 function getQuestSkill(quest) {
-    return quest.skill || 'discipline';
+    return quest.skill || 'vigueur';
 }
 
 // V10.0c FIX: when an action is undone (habit/task unchecked), a quest that was
@@ -1398,7 +1403,7 @@ function revokeInvalidQuests() {
         const wasMarked = ids.includes(quest.id);
         if (wasMarked && !isQuestComplete(quest)) {
             // Refund the XP that was granted on completion
-            const skillKey = quest.skill || 'discipline';
+            const skillKey = quest.skill || 'vigueur';
             removeSkillXP(skillKey, quest.xp);
             gameState.quests.completedIds = gameState.quests.completedIds.filter(id => id !== quest.id);
             changed = true;
@@ -1434,7 +1439,7 @@ function addHabit(frequencyOverride) {
         xpReward: HABIT_XP,
         streak: recoveredStreak,
         lastCompleted: recoveredStreak > 0 ? new Date(getNow().setDate(getNow().getDate()-1)).toISOString() : null,
-        category: 'discipline',
+        category: 'vigueur',
         isRecommended: false,
         frequency: frequency,
         history: []
@@ -1557,7 +1562,7 @@ function toggleHabit(habitId) {
 
     const wasCompleted = habit.completed;
     habit.completed = !habit.completed;
-    const skillKey = habit.category || 'discipline';
+    const skillKey = habit.category || 'vigueur';
 
     if (habit.completed && !wasCompleted) {
         habit.lastCompleted = getNow().toISOString();
@@ -1623,7 +1628,7 @@ function toggleHabitYesterday(habitId) {
     habit.lastCompleted = yesterday.toISOString();
 
     // Award XP using the freshly-recomputed streak
-    const skillKey = habit.category || 'discipline';
+    const skillKey = habit.category || 'vigueur';
     const streakBonus = Math.min(1.0, (habit.streak||0) * 0.05); // V2.0 cap +100%
     const xp = Math.floor(HABIT_XP * (1 + streakBonus));
 
@@ -1655,7 +1660,7 @@ function confirmDeleteHabit(habitId) {
             if (habit.completed) {
                 const streakBonus = Math.min(1.0, (habit.streak||0) * 0.05); // V2.0 cap +100%
                 const xp = Math.floor(HABIT_XP * (1 + streakBonus));
-                const skillKey = habit.category || 'discipline';
+                const skillKey = habit.category || 'vigueur';
                 removeSkillXP(skillKey, xp);
                 gameState.stats.totalHabitsCompleted = Math.max(0, gameState.stats.totalHabitsCompleted-1);
             }
@@ -1725,7 +1730,7 @@ function confirmReset() {
             _nextId = 1; _prevGlobalLevel = 1;
             gameState = {
                 username: gameState.username || 'Hero',
-                skills: { endurance:{level:1,currentXP:0,totalXP:0}, sagesse:{level:1,currentXP:0,totalXP:0}, discipline:{level:1,currentXP:0,totalXP:0}, serenite:{level:1,currentXP:0,totalXP:0}, maitrise:{level:1,currentXP:0,totalXP:0} },
+                skills: { constitution:{level:1,currentXP:0,totalXP:0}, instinct:{level:1,currentXP:0,totalXP:0}, vigueur:{level:1,currentXP:0,totalXP:0}, serenite:{level:1,currentXP:0,totalXP:0}, agilite:{level:1,currentXP:0,totalXP:0} },
                 habits: [], sessions: [],
                 lastResetDate: getLocalDateStr(new Date()),
                 stats: { totalHabitsCompleted:0, perfectDays:0, longestStreak:0 },
@@ -1755,7 +1760,7 @@ function openNewSessionModal() {
                 <label>Compétence</label>
                 <select id="ns-cat">
                     <option value="">Choisir une compétence...</option>
-                    ${Object.entries(SKILL_CONFIG).filter(([k])=>k!=='discipline')
+                    ${Object.entries(SKILL_CONFIG).filter(([k])=>k!=='vigueur')
                         .map(([k,v])=>`<option value="${k}">${v.icon} ${v.name}</option>`).join('')}
                 </select>
             </div>
@@ -1864,7 +1869,7 @@ function openEditSessionModal(sessionId) {
             <div class="modal-field">
                 <label>Compétence</label>
                 <select id="es-cat">
-                    ${Object.entries(SKILL_CONFIG).filter(([k])=>k!=='discipline')
+                    ${Object.entries(SKILL_CONFIG).filter(([k])=>k!=='vigueur')
                         .map(([k,v])=>`<option value="${k}" ${session.category===k?'selected':''}>${v.icon} ${v.name}</option>`).join('')}
                 </select>
             </div>
@@ -2222,7 +2227,7 @@ function debugCheckAll() {
             h.lastWeekReset = getISOWeekString(getNow());
         h.streak = computeHabitStreak(h);
         const xp = Math.floor(HABIT_XP * (1 + (h.streak||0) * 5 / 100));
-        const skillKey = h.category || 'discipline';
+        const skillKey = h.category || 'vigueur';
         gainSkillXP(skillKey, xp, `Habitude — ${h.name}`);
         gameState.stats.totalHabitsCompleted++;
     });
@@ -2236,7 +2241,7 @@ function debugUncheckAll() {
     gameState.habits.forEach(h => {
         if (!h.completed) return;
         const xp = Math.floor(HABIT_XP * (1 + (h.streak||0) * 5 / 100));
-        const skillKey = h.category || 'discipline';
+        const skillKey = h.category || 'vigueur';
         removeSkillXP(skillKey, xp);
         gameState.stats.totalHabitsCompleted = Math.max(0, gameState.stats.totalHabitsCompleted - 1);
         h.completed = false;
@@ -2298,6 +2303,9 @@ function renderHabitsPage() {
             <div class="skills-row-container">
                 ${orbits}
             </div>`;
+        // Start wolf animation if stage 1
+        stopWolfAnimation();
+        if (computeCreatureStage() === 1) setTimeout(startWolfAnimation, 100);
     }
 
     const unEl = document.getElementById('habit-username');
@@ -2336,7 +2344,7 @@ function renderHabitsPage() {
         const streakBonus = Math.min(1.0, currentStreak * 0.05); // V2.0 cap +100%
         const xp          = Math.floor(HABIT_XP * (1 + streakBonus));
         // V6.0d: weapon boost display
-        const skillKey    = habit.category || 'discipline';
+        const skillKey    = habit.category || 'vigueur';
         const weaponMult  = getWeaponBoostMult(skillKey);
         const weaponPct   = Math.round((weaponMult - 1) * 100);
         const xpFinal     = Math.floor(xp * weaponMult);
@@ -2344,7 +2352,7 @@ function renderHabitsPage() {
             ? `<span class="habit-weapon-boost"> · +${weaponPct}% ⚔️</span>` : '';
         const streakHtml  = currentStreak > 0
             ? `<span class="habit-streak"> · 🔥${currentStreak}j (+${Math.round(streakBonus * 100)}%)${streakBadge(currentStreak)}</span>` : '';
-        const skillCfg    = SKILL_CONFIG[habit.category || 'discipline'];
+        const skillCfg    = SKILL_CONFIG[habit.category || 'vigueur'];
         const recoTag     = habit.isRecommended
             ? `<span class="habit-reco-tag" style="color:${skillCfg.color}">${skillCfg.icon}</span>` : '';
 
@@ -2432,7 +2440,7 @@ function renderSessionsPage() {
     const stage = document.getElementById('sessions-avatar-stage');
     if (stage) {
         // V2.2: Same layout as Habits — louveteau en haut, 4 compétences en ligne en dessous
-        const sessionSkills = ['sagesse','endurance','serenite','maitrise'];
+        const sessionSkills = ['instinct','constitution','serenite','agilite'];
         const orbits = sessionSkills.map((key) => {
             const skill = gameState.skills[key];
             return `<div class="skill-orbit-flex" onclick="toggleOrbitTooltip(this)">${buildOrbitSVG(key, skill)}</div>`;
@@ -2653,7 +2661,7 @@ function renderProfilPage() {
     // "Actif aujourd'hui" = habitude cochée OU session loggée aujourd'hui
     const activeWeekSkills = new Set();
     gameState.habits.forEach(h => {
-        if (h.completed) activeWeekSkills.add(h.category || 'discipline');
+        if (h.completed) activeWeekSkills.add(h.category || 'vigueur');
     });
     gameState.sessions.forEach(s => {
         if ((s.logs||[]).some(l => l.date === todayStr && l.xpAwarded > 0))
@@ -2685,7 +2693,7 @@ function renderProfilPage() {
                 if (displayLabel.includes(' — ')) {
                     // "Habitude — Méditation" → "Méditation"
                     displayLabel = displayLabel.split(' — ').slice(1).join(' — ');
-                } else if (['endurance','sagesse','discipline','serenite','maitrise'].includes(displayLabel)) {
+                } else if (['constitution','instinct','vigueur','serenite','agilite'].includes(displayLabel)) {
                     // Bare skill name (older entries) → show type only
                     displayLabel = '(ancien)';
                 }
@@ -3139,13 +3147,13 @@ function checkAchievementTitles() {
         { id:'ser_hf1',   condition: () => countSessionsAboveThreshold('serenite', 10) >= 50 },
         { id:'ser_hf365', condition: () => (gameState.stats.longestPerfectStreak||0) >= 365 }, // approx
         // Endurance
-        { id:'end_hf1',   condition: () => countSessionsAboveThreshold('endurance', 20) >= 100 },
+        { id:'end_hf1',   condition: () => countSessionsAboveThreshold('constitution', 20) >= 100 },
         { id:'end_hf365', condition: () => getHabitMaxStreak('Marche 20 min') >= 365 },
         // Sagesse
-        { id:'sag_hf1',   condition: () => countSessionsAboveThreshold('sagesse', 15) >= 200 },
+        { id:'sag_hf1',   condition: () => countSessionsAboveThreshold('instinct', 15) >= 200 },
         { id:'sag_hf365', condition: () => getHabitMaxStreak('Lecture 15 min') >= 365 },
         // Maîtrise
-        { id:'mai_hf1',   condition: () => countSessionsAboveThreshold('maitrise', 25) >= 75 },
+        { id:'mai_hf1',   condition: () => countSessionsAboveThreshold('agilite', 25) >= 75 },
         { id:'mai_hf365', condition: () => getPersonalHabitMaxStreak() >= 365 },
         // Discipline
         { id:'disc_hf1',  condition: () => (gameState.stats.perfectDays||0) >= 30 },
@@ -3262,7 +3270,7 @@ let _calendarState = {
 function openHabitCalendar(habitId) {
     const habit = gameState.habits.find(h => h.id === habitId);
     if (!habit) return;
-    const cfg = SKILL_CONFIG[habit.category || 'discipline'];
+    const cfg = SKILL_CONFIG[habit.category || 'vigueur'];
 
     // V6.0c fix: build dates from multiple sources
     const dates = new Set(habit.history || []);
@@ -3279,7 +3287,7 @@ function openHabitCalendar(habitId) {
     if (dates.size === 0 && habit.name) {
         const label = `Habitude — ${habit.name}`;
         (gameState.xpHistory || []).forEach(e => {
-            if (e.skill === (habit.category||'discipline') && e.label && e.label.includes(habit.name)) {
+            if (e.skill === (habit.category||'vigueur') && e.label && e.label.includes(habit.name)) {
                 dates.add(e.date);
             }
         });
@@ -3471,7 +3479,7 @@ function openNewHabitModal(prefill) {
             streak: recoveredStreak,
             lastCompleted: recoveredStreak > 0
                 ? new Date(getNow().setDate(getNow().getDate()-1)).toISOString() : null,
-            category: 'discipline',
+            category: 'vigueur',
             isRecommended: false,
             frequency: freq,
             lastWeekReset: freq === 'weekly' ? getISOWeekString(getNow()) : null,
@@ -4229,7 +4237,7 @@ function buildQuetesTabCamp() {
 function buildEquipTab() {
     const c = gameState.campaign;
     if (!c) return '';
-    const skills = ['endurance','sagesse','serenite','maitrise','discipline'];
+    const skills = ['constitution','instinct','serenite','agilite','vigueur'];
     return `<div class="equip-wrap"><div class="equip-info-banner">⚔️ Chaque arme booste UNIQUEMENT la compétence sur laquelle elle est équipée</div>${skills.map(sk => {
         const cfg=SKILL_CONFIG[sk], skill=gameState.skills[sk], w=c.weapons[sk];
         const broken=w?.broken;
@@ -4244,7 +4252,7 @@ function buildEquipTab() {
                 if (dl) {
                     const repStart=new Date(dl); repStart.setDate(repStart.getDate()-7);
                     let cur=0, needed=150;
-                    if (sk==='endurance') { needed=150; gameState.sessions.filter(s=>s.category===sk).forEach(s=>(s.logs||[]).forEach(l=>{if(new Date(l.date)>=repStart)cur+=l.minutes;})); }
+                    if (sk==='constitution') { needed=150; gameState.sessions.filter(s=>s.category===sk).forEach(s=>(s.logs||[]).forEach(l=>{if(new Date(l.date)>=repStart)cur+=l.minutes;})); }
                     else { needed=4; gameState.sessions.filter(s=>s.category===sk).forEach(s=>cur+=(s.logs||[]).filter(l=>new Date(l.date)>=repStart).length); }
                     const pct=Math.min(100,(cur/needed)*100);
                     if (cur>=needed&&w.broken){w.broken=false;c.repairDeadline[sk]=null;toast(`🔧 ${w.name} réparée !`,'success');saveGameState();}
@@ -4749,7 +4757,7 @@ const INNOMMABLE_CONDITIONS = [
             const xp = gameState.xpHistory || [];
             const datesWithDiscipline = new Set();
             xp.forEach(e => {
-                if (e.skill === 'discipline' && e.label && e.label.includes('Perfect') && new Date(e.date) >= start) {
+                if (e.skill === 'vigueur' && e.label && e.label.includes('Perfect') && new Date(e.date) >= start) {
                     datesWithDiscipline.add(e.date);
                 }
             });
@@ -6124,7 +6132,7 @@ function addTask(name, skill) {
     const task = {
         id: nextTaskId(),
         name: name.trim(),
-        skill: skill || 'discipline',
+        skill: skill || 'vigueur',
         createdDate: today,
         dueDate: today,
         completed: false,
@@ -6161,9 +6169,9 @@ function toggleTask(taskId) {
         task.xpGiven = xp; // remember for un-toggle
 
         if (xp > 0) {
-            gainSkillXP(task.skill || 'discipline', xp, `Tâche — ${task.name}`);
+            gainSkillXP(task.skill || 'vigueur', xp, `Tâche — ${task.name}`);
             bumpTasksXPAwardedForDate(today, xp);
-            const mult = getWeaponBoostMult(task.skill || 'discipline');
+            const mult = getWeaponBoostMult(task.skill || 'vigueur');
             const boosted = Math.floor(xp * mult);
             const hasBonus = boosted > xp;
             const bonusText = hasBonus ? ` (+${Math.round((mult-1)*100)}% ⚔️)` : '';
@@ -6184,7 +6192,7 @@ function toggleTask(taskId) {
         // Remove XP that was actually given (may be less than full if cap was hit)
         const xpToRemove = task.xpGiven || 0;
         if (xpToRemove > 0) {
-            removeSkillXP(task.skill || 'discipline', xpToRemove);
+            removeSkillXP(task.skill || 'vigueur', xpToRemove);
             bumpTasksXPAwardedForDate(today, -xpToRemove);
         }
         task.xpGiven = 0;
@@ -6224,7 +6232,7 @@ function toggleTaskYesterday(taskId) {
     task.xpGiven = xp;
 
     if (xp > 0) {
-        gainSkillXP(task.skill || 'discipline', xp, `Tâche — ${task.name} (hier)`);
+        gainSkillXP(task.skill || 'vigueur', xp, `Tâche — ${task.name} (hier)`);
         bumpTasksXPAwardedForDate(yStr, xp);
         const capWarn = xp < xpFull ? ` · cap d'hier atteint (${xp}/${xpFull})` : '';
         toast(`✅ "${task.name}" validée pour hier — +${xp} XP${capWarn}`, 'success');
@@ -6245,7 +6253,7 @@ function deleteTask(taskId) {
     if (task.completed && task.completedDate === today) {
         const xpToRemove = task.xpGiven || 0;
         if (xpToRemove > 0) {
-            removeSkillXP(task.skill || 'discipline', xpToRemove);
+            removeSkillXP(task.skill || 'vigueur', xpToRemove);
             bumpTasksXPAwardedForDate(today, -xpToRemove);
         }
         const stillOneDoneToday = gameState.tasks.some(t => t !== task && t.completed && t.completedDate === today);
@@ -6395,7 +6403,7 @@ function renderTasksPage() {
 }
 
 function renderTaskCard(task, kind) {
-    const sk = SKILL_CONFIG[task.skill] || SKILL_CONFIG['discipline'];
+    const sk = SKILL_CONFIG[task.skill] || SKILL_CONFIG['vigueur'];
     const skillIcon = sk?.icon || '⚙️';
     const skillName = sk?.name || task.skill;
     const carriedBadge = task.carriedOver > 0
@@ -6478,7 +6486,7 @@ function openAddTaskModal() {
                 <input type="text" id="new-task-name" class="modal-input" placeholder="ex: Appeler le médecin" value="${escapeHtml(prefill)}" />
                 <label class="modal-label" style="margin-top:12px;">Compétence</label>
                 <div class="task-skill-picker" id="task-skill-picker">${skillOpts}</div>
-                <input type="hidden" id="new-task-skill" value="discipline" />
+                <input type="hidden" id="new-task-skill" value="vigueur" />
             </div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="document.getElementById('add-task-modal').remove()">Annuler</button>
@@ -6488,7 +6496,7 @@ function openAddTaskModal() {
     document.body.appendChild(overlay);
     overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
     // Pre-select discipline
-    selectTaskSkillPick('discipline');
+    selectTaskSkillPick('vigueur');
     setTimeout(() => document.getElementById('new-task-name')?.focus(), 50);
 }
 
@@ -6502,7 +6510,7 @@ function selectTaskSkillPick(skill) {
 
 function commitAddTask() {
     const name = document.getElementById('new-task-name')?.value.trim();
-    const skill = document.getElementById('new-task-skill')?.value || 'discipline';
+    const skill = document.getElementById('new-task-skill')?.value || 'vigueur';
     if (!name) { toast('Donne un nom à la tâche', 'error'); return; }
     addTask(name, skill);
     document.getElementById('add-task-modal')?.remove();
@@ -6547,7 +6555,7 @@ function openEditTaskModal(taskId) {
                 <input type="text" id="edit-task-name" class="modal-input" value="${escapeHtml(task.name)}" />
                 <label class="modal-label" style="margin-top:12px;">Compétence</label>
                 <div class="task-skill-picker" id="edit-task-skill-picker">${skillOpts}</div>
-                <input type="hidden" id="edit-task-skill-val" value="${task.skill || 'discipline'}" />
+                <input type="hidden" id="edit-task-skill-val" value="${task.skill || 'vigueur'}" />
                 <input type="hidden" id="edit-task-id-val" value="${task.id}" />
             </div>
             <div class="modal-actions">
@@ -6557,7 +6565,7 @@ function openEditTaskModal(taskId) {
         </div>`;
     document.body.appendChild(overlay);
     overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
-    selectEditTaskSkillPick(task.skill || 'discipline');
+    selectEditTaskSkillPick(task.skill || 'vigueur');
     setTimeout(() => document.getElementById('edit-task-name')?.focus(), 50);
 }
 
@@ -6572,7 +6580,7 @@ function selectEditTaskSkillPick(skill) {
 function commitEditTask() {
     const id    = parseInt(document.getElementById('edit-task-id-val')?.value, 10);
     const name  = document.getElementById('edit-task-name')?.value.trim();
-    const skill = document.getElementById('edit-task-skill-val')?.value || 'discipline';
+    const skill = document.getElementById('edit-task-skill-val')?.value || 'vigueur';
     if (!name) { toast('Donne un nom à la tâche', 'error'); return; }
     const task = (gameState.tasks||[]).find(t => t.id === id);
     if (!task) return;
@@ -6581,7 +6589,7 @@ function commitEditTask() {
     // xpGiven from old skill to new skill (no double-count, no loss).
     const today = getLocalDateStr(getNow());
     const wasCompletedToday = task.completed && task.completedDate === today;
-    const oldSkill = task.skill || 'discipline';
+    const oldSkill = task.skill || 'vigueur';
     const skillChanged = oldSkill !== skill;
 
     task.name = name;
@@ -6612,10 +6620,10 @@ function commitEditTask() {
    ═══════════════════════════════════════════ */
 
 const CREATURE_STAGE_THRESHOLDS = [
-    { stage: 1, xp: 0     },  // Louveteau      (start)
-    { stage: 2, xp: 1400  },  // Jeune Loup     (~1 week)
-    { stage: 3, xp: 7000  },  // Loup Adulte    (~1 month)
-    { stage: 4, xp: 25000 },  // Forme Mythique (~3 months) — branch locked here
+    { stage: 1, xp: 0     },  // Louveteau      (départ)
+    { stage: 2, xp: 4200  },  // Jeune Loup     (~3 semaines)
+    { stage: 3, xp: 21000 },  // Loup Adulte    (~3 mois)
+    { stage: 4, xp: 75000 },  // Forme Mythique (~9 mois)
 ];
 
 const CREATURE_BRANCH_NAMES = {
@@ -6646,8 +6654,8 @@ function computeCreatureBranch() {
     const dominant = Object.entries(pcts).find(([, v]) => v === maxPct)[0];
     // Primordiale if no skill is truly dominant (±2% around 30%)
     if (maxPct < 0.32) return 'primal';
-    return { endurance:'power', discipline:'legion',
-             serenite:'spirit', sagesse:'arcane', maitrise:'shadow' }[dominant] || 'primal';
+    return { constitution:'power', vigueur:'legion',
+             serenite:'spirit', instinct:'arcane', agilite:'shadow' }[dominant] || 'primal';
 }
 
 function getCreatureState() {
@@ -6694,22 +6702,55 @@ function creatureSVG() {
 }
 
 function creatureSVGStage1(state) {
-    // V2.2: Display PNG louveteau (transparent background)
-    const imgPath = 'images/wolf_stage1.png';
+    // V2.2.1: 7-frame palindrome animation
+    // F1→F2→F3→F4→F5→F6→F7→F6→F5→F4→F3→F2→F1 (loop)
     const stateClass = `creature-img-wrap creature-${state}`;
     const eyeOverlay = state === 'sleeping'
         ? '<div class="creature-img-overlay-sleep">😴</div>'
         : state === 'radiant'
         ? '<div class="creature-img-overlay-glow creature-aura-ring"></div>'
         : '';
-    
-    return `<div class="${stateClass}">
-        <img src="${imgPath}" alt="Louveteau" class="creature-img creature-img-stage1"/>
+    return `<div class="${stateClass}" id="wolf-anim-wrap">
+        <img id="wolf-anim-img" src="images/wolf/wolf_s1_f1.png" alt="Louveteau" class="creature-img creature-img-stage1"/>
         ${eyeOverlay}
     </div>`;
 }
 
-// SVG fallback if the image file isn't deployed yet
+// V2.2.1 — Wolf animation engine (palindrome loop)
+let _wolfAnimTimer = null;
+function startWolfAnimation() {
+    if (_wolfAnimTimer) return; // already running
+    const frames = [
+        { src: 'images/wolf/wolf_s1_f1.png', duration: 2000 },
+        { src: 'images/wolf/wolf_s1_f2.png', duration: 400  },
+        { src: 'images/wolf/wolf_s1_f3.png', duration: 500  },
+        { src: 'images/wolf/wolf_s1_f4.png', duration: 400  },
+        { src: 'images/wolf/wolf_s1_f5.png', duration: 500  },
+        { src: 'images/wolf/wolf_s1_f6.png', duration: 400  },
+        { src: 'images/wolf/wolf_s1_f7.png', duration: 2000 },
+        { src: 'images/wolf/wolf_s1_f6.png', duration: 400  },
+        { src: 'images/wolf/wolf_s1_f5.png', duration: 500  },
+        { src: 'images/wolf/wolf_s1_f4.png', duration: 400  },
+        { src: 'images/wolf/wolf_s1_f3.png', duration: 500  },
+        { src: 'images/wolf/wolf_s1_f2.png', duration: 400  },
+    ];
+    let idx = 0;
+    function next() {
+        const img = document.getElementById('wolf-anim-img');
+        if (!img) { _wolfAnimTimer = null; return; } // DOM gone, stop
+        img.src = frames[idx].src;
+        _wolfAnimTimer = setTimeout(() => {
+            idx = (idx + 1) % frames.length;
+            next();
+        }, frames[idx].duration);
+    }
+    next();
+}
+function stopWolfAnimation() {
+    if (_wolfAnimTimer) { clearTimeout(_wolfAnimTimer); _wolfAnimTimer = null; }
+}
+
+// SVG fallback si images/wolf/ pas encore déployé
 function creatureSVGStage1Fallback(state) {
     const eyeOpacity = state === 'sleeping' ? 0 : state === 'waiting' ? 0.5 : 1;
     const auraOpacity = state === 'radiant' ? 0.5 : 0;
@@ -6749,7 +6790,7 @@ function creatureSVGStage2(state) {
     // Compute dominant skill for forehead marking color
     const skills = gameState.skills;
     const total = Object.values(skills).reduce((s, sk) => s + sk.totalXP, 0);
-    const dominant = total > 0 ? Object.entries(skills).reduce((a, b) => a[1].totalXP > b[1].totalXP ? a : b)[0] : 'discipline';
+    const dominant = total > 0 ? Object.entries(skills).reduce((a, b) => a[1].totalXP > b[1].totalXP ? a : b)[0] : 'vigueur';
     const markColor = SKILL_CONFIG[dominant]?.color || '#f5c842';
     return `
     <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg" class="creature-svg creature-stage2 creature-${state}">
