@@ -195,19 +195,19 @@ const RECOMMENDED_HABITS = [
 // ── Quest pools ──
 const QUEST_POOLS = {
     daily: {
-        discipline: [
+        vigueur: [
             { id:'d_disc_1', title:'Démarrage du jour',   desc:'Coche 50% de tes habitudes perso (arrondi supérieur)', type:'habits_personal_pct', target:0.5,  xp:30  },
             { id:'d_disc_2', title:'Hygiène de vie',      desc:'Coche 70% de tes habitudes recommandées (arrondi supérieur)', type:'habits_reco_pct', target:0.7, xp:30 },
             { id:'d_disc_3', title:'Journée parfaite',    desc:'Coche au moins 8 habitudes (recommandées + perso)', type:'habits_total_min', target:8, xp:150, minHabits:8, requiresPersonal:true },
             { id:'d_disc_4', title:'Sans faute',          desc:'Aucune habitude recommandée manquée aujourd\'hui', type:'habits_reco_all', target:1, xp:60 },
             { id:'d_disc_5', title:'Constance absolue',   desc:'Maintiens le streak sur au moins 1 habitude', type:'habit_any_streak', target:1, xp:30 }
         ],
-        endurance: [
-            { id:'d_end_1', title:'Mise en jambes',  desc:'Log une session Endurance de 20–44 min', type:'session_range', skill:'constitution', minMins:20, maxMins:44, xp:60  },
-            { id:'d_end_2', title:'Séance solide',   desc:'Log une session Endurance de 45–74 min', type:'session_range', skill:'constitution', minMins:45, maxMins:74, xp:90  },
-            { id:'d_end_3', title:'Effort long',     desc:'Log une session Endurance de 75 min+',   type:'session_range', skill:'constitution', minMins:75, maxMins:9999, xp:120 }
+        constitution: [
+            { id:'d_end_1', title:'Mise en jambes',  desc:'Log une session Constitution de 20–44 min', type:'session_range', skill:'constitution', minMins:20, maxMins:44, xp:60  },
+            { id:'d_end_2', title:'Séance solide',   desc:'Log une session Constitution de 45–74 min', type:'session_range', skill:'constitution', minMins:45, maxMins:74, xp:90  },
+            { id:'d_end_3', title:'Effort long',     desc:'Log une session Constitution de 75 min+',   type:'session_range', skill:'constitution', minMins:75, maxMins:9999, xp:120 }
         ],
-        sagesse: [
+        instinct: [
             { id:'d_sag_1', title:'Lecteur du matin', desc:'Log 15–29 min de lecture ou apprentissage', type:'session_range', skill:'instinct', minMins:15, maxMins:29, xp:60  },
             { id:'d_sag_2', title:'Session de savoir', desc:'Log 30–59 min de lecture ou cours',         type:'session_range', skill:'instinct', minMins:30, maxMins:59, xp:90  },
             { id:'d_sag_3', title:'Apprentissage profond', desc:'Log 60 min+ de lecture ou cours en ligne', type:'session_range', skill:'instinct', minMins:60, maxMins:9999, xp:120 }
@@ -217,27 +217,27 @@ const QUEST_POOLS = {
             { id:'d_ser_2', title:'Pleine présence', desc:'Log 20–44 min de méditation ou journal',     type:'session_range', skill:'serenite', minMins:20, maxMins:44, xp:90  },
             { id:'d_ser_3', title:'Sérénité totale', desc:'Log 45 min+ de méditation ou marche en nature', type:'session_range', skill:'serenite', minMins:45, maxMins:9999, xp:120 }
         ],
-        maitrise: [
+        agilite: [
             { id:'d_mai_1', title:'1 Pomodoro',       desc:'Log 25–44 min de deep work (1 Pomodoro)',  type:'session_range', skill:'agilite', minMins:25, maxMins:44, xp:60  },
             { id:'d_mai_2', title:'Session de flow',  desc:'Log 45–74 min de deep work concentré',     type:'session_range', skill:'agilite', minMins:45, maxMins:74, xp:90  },
             { id:'d_mai_3', title:'Maîtrise totale',  desc:'Log 75 min+ de deep work',                 type:'session_range', skill:'agilite', minMins:75, maxMins:9999, xp:120 }
         ]
     },
     weekly: {
-        endurance: [
-            { id:'w_end_1', title:'Semaine d\'constitution', desc:'Log 2 sessions Endurance de 45 min minimum cette semaine', type:'week_sessions_min', skill:'constitution', count:2, minMins:45, xp:250 }
+        constitution: [
+            { id:'w_end_1', title:'Semaine Constitution', desc:'Log 2 sessions Constitution de 45 min minimum cette semaine', type:'week_sessions_min', skill:'constitution', count:2, minMins:45, xp:250 }
         ],
-        sagesse: [
-            { id:'w_sag_1', title:'Semaine du savoir',  desc:'Log 3 sessions Sagesse cette semaine',  type:'week_sessions_count', skill:'instinct', count:3, xp:250 }
+        instinct: [
+            { id:'w_sag_1', title:'Semaine Instinct',  desc:'Log 3 sessions Instinct cette semaine',  type:'week_sessions_count', skill:'instinct', count:3, xp:250 }
         ],
         serenite: [
             { id:'w_ser_1', title:'Semaine sereine',    desc:'Log 4 sessions Sérénité cette semaine (fréquence > durée)', type:'week_sessions_count', skill:'serenite', count:4, xp:250 }
         ],
-        maitrise: [
-            { id:'w_mai_1', title:'Semaine de maîtrise', desc:'Log 2 sessions Maîtrise consécutives cette semaine', type:'week_sessions_min', skill:'agilite', count:2, minMins:45, xp:250 }
+        agilite: [
+            { id:'w_mai_1', title:'Semaine Agilité', desc:'Log 2 sessions Agilité consécutives cette semaine', type:'week_sessions_min', skill:'agilite', count:2, minMins:45, xp:250 }
         ],
-        discipline: [
-            { id:'w_disc_1', title:'Semaine disciplinée', desc:'Complète toutes tes habitudes recommandées 3 jours cette semaine', type:'week_reco_days', count:3, xp:300 }
+        vigueur: [
+            { id:'w_disc_1', title:'Semaine Vigueur', desc:'Complète toutes tes habitudes recommandées 3 jours cette semaine', type:'week_reco_days', count:3, xp:300 }
         ]
     }
 };
@@ -774,6 +774,7 @@ function saveGameState() {
 // so old backups always get every migration. Add any future migration HERE only.
 function migrateGameState() {
     if (!gameState) return;
+    if (typeof gameState._activeDays !== 'number') gameState._activeDays = 0;
     if (!gameState.username)  gameState.username = 'Hero';
     if (!gameState.skills)    gameState.skills = { constitution:{level:1,currentXP:0,totalXP:0}, instinct:{level:1,currentXP:0,totalXP:0}, vigueur:{level:1,currentXP:0,totalXP:0}, serenite:{level:1,currentXP:0,totalXP:0}, agilite:{level:1,currentXP:0,totalXP:0} };
     // V2.2.1 — migration anciens noms → nouveaux noms aptitudes bête
@@ -798,6 +799,19 @@ function migrateGameState() {
         gameState.sessions.forEach(s => {
             if (s.category && catMap[s.category]) s.category = catMap[s.category];
         });
+    }
+    // V2.2.1 — migrer aussi les quêtes sauvegardées
+    if (gameState.quests) {
+        const migrateQuest = q => {
+            if (q && q.skill && catMap[q.skill]) q.skill = catMap[q.skill];
+        };
+        (gameState.quests.daily || []).forEach(migrateQuest);
+        (gameState.quests.weeklyArr || []).forEach(migrateQuest);
+        if (gameState.quests.weekly) migrateQuest(gameState.quests.weekly);
+        // Force régénération des quêtes si elles ont des anciens skills
+        const hasOldSkill = [...(gameState.quests.daily||[]), ...(gameState.quests.weeklyArr||[])]
+            .some(q => q && q.skill && catMap[q.skill]);
+        if (hasOldSkill) gameState.quests = null; // régénération au prochain render
     }
     if (!gameState.stats)     gameState.stats = { totalHabitsCompleted:0, perfectDays:0, longestStreak:0 };
     if (!gameState.sessions)  gameState.sessions = [];
@@ -1128,8 +1142,8 @@ function generateDailyQuests(now) {
     if (!gameState.quests || gameState.quests.date !== todayStr) {
         const completedIds = gameState.quests ? (gameState.quests.completedIds || []) : [];
 
-        // Pick 3 daily quests: 1 discipline + 1 random session skill + 1 varied
-        const discPool = QUEST_POOLS.daily.discipline;
+        // Pick 3 daily quests: 1 vigueur + 1 random session skill + 1 varied
+        const discPool = QUEST_POOLS.daily.vigueur;
         const sessionSkills = ['constitution','instinct','serenite','agilite'];
         const skill1 = sessionSkills[seededRand(todayStr+'s1', sessionSkills.length)];
         const skill2 = sessionSkills[seededRand(todayStr+'s2', sessionSkills.length)] !== skill1
@@ -2171,6 +2185,29 @@ function supermanSVG() {
 function switchTab(tabName) {
     // V5.3: remap saved 'quetes' → 'campagne'
     if (tabName === 'quetes') tabName = 'campagne';
+    // V3.1: onboarding — bloquer les onglets verrouillés
+    if (!isTabUnlocked(tabName)) {
+        const infos = {
+            sessions: { icon:'⚡', title:'Sessions verrouillées', msg:'Reviens après 3 jours d\'activité\n(50% de tes habitudes cochées chaque jour).\n\nLes sessions te permettront de tracker\ntes efforts et nourrir ton compagnon.' },
+            campagne: { icon:'⚔️', title:'Épreuves verrouillées', msg:'Reviens après 7 jours d\'activité.\n\nLes Épreuves te permettront d\'affronter\ndes boss, gagner des Éclats et faire\névoluer ton compagnon.' },
+        };
+        const info = infos[tabName] || { icon:'🔒', title:'Zone verrouillée', msg:'Continue tes habitudes pour débloquer cette zone.' };
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `
+            <div class="modal-box" style="text-align:center;">
+                <div style="font-size:2rem;margin-bottom:8px;">${info.icon}</div>
+                <div class="modal-title">${info.title}</div>
+                <p style="color:var(--text-mid);font-size:0.82rem;line-height:1.6;margin:12px 0;white-space:pre-line">${info.msg}</p>
+                <div style="color:var(--text-dim);font-size:0.72rem;font-family:'JetBrains Mono',monospace;margin-bottom:16px;">
+                    ${countActiveDays()} jours actifs
+                </div>
+                <button class="btn-gold" style="width:100%" onclick="this.closest('.modal-overlay').remove()">Continuer</button>
+            </div>`;
+        document.body.appendChild(overlay);
+        overlay.addEventListener('click', e => { if(e.target===overlay) overlay.remove(); });
+        return;
+    }
     // V7.0b: flush any pending journal autosave before leaving
     if (typeof flushJournalAutosave === 'function') flushJournalAutosave();
     // V7.0: re-lock journal when leaving profil
@@ -2185,6 +2222,7 @@ function switchTab(tabName) {
         page.classList.toggle('active', page.dataset.page === tabName);
     });
     localStorage.setItem('lifeRPG_tab_v3', tabName);
+    updateTabBarVisibility();
     renderUI();
 }
 
@@ -2279,6 +2317,10 @@ function debugUncheckAll() {
 // ─────────────────────────────────────────────
 function renderUI() {
     updateTopBar();
+    // V3.1: mise à jour onboarding à chaque render
+    autoSkipOnboardingIfNeeded();
+    updateTabBarVisibility();
+    checkTabUnlocks();
     // V6.0b fix: render title display on every UI update (was lost on reload)
     if (typeof renderTitleDisplay === 'function') renderTitleDisplay();
     // V6.0b fix: update mood FAB on every render so it resets at midnight
@@ -2783,9 +2825,12 @@ function renderProfilPage() {
     const sessStatsEl = document.getElementById('profil-session-stats');
     if (sessStatsEl) sessStatsEl.innerHTML = buildSessionStatsBlock();
 
-    // V2.1: Éclat collection
+    // V3.1: galerie évolutions créature
     const eclatEl = document.getElementById('profil-eclat-section');
     if (eclatEl) eclatEl.innerHTML = buildEclatCollection();
+
+    const evolEl = document.getElementById('profil-evol-section');
+    if (evolEl) evolEl.innerHTML = buildCreatureEvolutionGallery();
 
     // V9.2: correlation view
     const corrEl = document.getElementById('profil-correlation-section');
@@ -2995,6 +3040,15 @@ function openSettingsModal() {
                 <div class="settings-row-body">
                     <div class="settings-row-title">Nettoyer données futures</div>
                     <div class="settings-row-sub">Supprime les entrées datées après aujourd'hui (artefacts mode test)</div>
+                </div>
+                <span style="color:var(--text-dim);">›</span>
+            </div>
+            <div class="settings-divider"></div>
+            <div class="settings-row" onclick="unlockAllTabs()" style="cursor:pointer;">
+                <span class="settings-row-icon">🔓</span>
+                <div class="settings-row-body">
+                    <div class="settings-row-title">Tout débloquer</div>
+                    <div class="settings-row-sub">${localStorage.getItem(ONBOARDING_SKIP) ? '✅ Toutes les zones accessibles' : 'Désactiver le déblocage progressif'}</div>
                 </div>
                 <span style="color:var(--text-dim);">›</span>
             </div>
@@ -3953,9 +4007,13 @@ function renderCampagneContent() {
     const el = document.getElementById('camp-content');
     if (!el) return;
     if (!gameState.campaign) initCampaign();
-    if (_campSubtab === 'boss')   el.innerHTML = buildBossTab();
-    if (_campSubtab === 'quetes') el.innerHTML = buildQuetesTabCamp();
-    // equip tab removed V2.1
+    try {
+        if (_campSubtab === 'boss')   el.innerHTML = buildBossTab();
+        if (_campSubtab === 'quetes') el.innerHTML = buildQuetesTabCamp();
+    } catch(e) {
+        console.error('Erreur campagne:', e);
+        el.innerHTML = `<p style="color:var(--text-dim);padding:20px;text-align:center">Erreur — ${e.message}</p>`;
+    }
 }
 
 // ── Boss tab ──
@@ -4081,21 +4139,25 @@ function buildBossTab() {
     const browseAct = _displayActCurrent();
     const allActs = [...new Set(BOSS_DATA.map(b => b.act))].sort((a,b)=>a-b);
     const actBosses = BOSS_DATA.filter(b=>b.act===browseAct);
-    const chipsHtml = actBosses.map(b => {
-        const done=c.bossDefeated.includes(b.id), active=b.id===boss.id, locked=!isBossUnlocked(b.id)&&!done;
-        const cls='boss-chip'+(active?' active':done?' done':locked?' locked':'');
-        const st=done?'✅':(active&&isFighting)?'⚔️':locked?'🔒':'●';
-        return `<div class="${cls}" onclick="selectDisplayBoss('${b.id}')">${b.emoji} ${b.name} <span style="font-size:0.6rem">${st}</span></div>`;
+    // Navigation boss — chips horizontaux scrollables (tous les boss de tous les actes)
+    const allChipsHtml = allActs.map(act => {
+        const bosses = BOSS_DATA.filter(b => b.act === act);
+        const rows = bosses.map(b => {
+            const done = c.bossDefeated.includes(b.id);
+            const active = b.id === boss.id;
+            const locked = !isBossUnlocked(b.id) && !done;
+            const cls = 'boss-chip' + (active?' active':done?' done':locked?' locked':'');
+            const st = done?'✅':(active&&isFighting)?'⚔️':locked?'🔒':'●';
+            const click = locked ? '' : `onclick="selectDisplayBoss('${b.id}')"`;
+            return `<div class="${cls}" ${click}>${b.emoji} ${b.name} <span style="font-size:0.6rem">${st}</span></div>`;
+        }).join('');
+        return `<div class="boss-chips-act-group">
+            <div class="boss-chips-act-sep">Acte ${act}</div>
+            ${rows}
+        </div>`;
     }).join('');
-    const defeatedCount = actBosses.filter(b=>c.bossDefeated.includes(b.id)).length;
-    const actName = actBosses[0]?.actName || '';
-    const canPrev = browseAct > allActs[0];
-    const canNext = browseAct < allActs[allActs.length-1];
-    const actNav = `<div class="boss-act-nav">
-        <button class="boss-act-arrow" ${canPrev?'':'disabled'} onclick="navigateDisplayAct(-1)">‹</button>
-        <span class="boss-act-nav-label"><strong>Acte ${browseAct}</strong> — ${actName} · ${defeatedCount}/${actBosses.length} vaincus</span>
-        <button class="boss-act-arrow" ${canNext?'':'disabled'} onclick="navigateDisplayAct(1)">›</button>
-    </div>`;
+
+    const bossListHtml = `<div class="boss-chips-wrap"><div class="boss-chips-scroll">${allChipsHtml}</div></div>`;
     // V2.2.1 — Full-art boss card (Pokémon style)
     const isLegend = diff === 'legendaire';
     // Image: legendary gets _legendaire variant if available
@@ -4109,8 +4171,9 @@ function buildBossTab() {
     };
     const rc = rarityColors[diff] || rarityColors.commun;
     const cardClass = isLegend ? 'boss-card boss-card-legendaire' : 'boss-card';
+    const safeName = boss.name.replace(/'/g, "\\'");
     const imgHtml = imgSrc
-        ? `<img class="boss-card-img" src="${imgSrc}" alt="${boss.name}">`
+        ? `<img class="boss-card-img" src="${imgSrc}" alt="${boss.name}" onclick="openImageModal('${imgSrc}','${safeName}')" style="cursor:pointer;">`
         : `<div class="boss-card-img-placeholder" style="background:${bgs[boss.act]}">${boss.emoji}</div>`;
     return `
         <div class="${cardClass}" style="--card-border:${rc.border};--card-glow:${rc.glow}">
@@ -4141,8 +4204,7 @@ function buildBossTab() {
             ${statusHtml}
             ${actHtml}
             ${eclatPreview}
-            ${actNav}
-            <div class="boss-chips-wrap"><div class="boss-chips-scroll">${chipsHtml}</div></div>
+            ${bossListHtml}
             ${buildVictoryBoard()}
         </div>`;
 }
@@ -4170,6 +4232,7 @@ function buildVictoryBoard() {
             const isLegend = diff === 'legendaire';
             const portrait = b.img
                 ? `<img class="victory-portrait-img" src="${b.img}" alt="${b.name}" loading="lazy"
+                       onclick="openImageModal('${b.img}','${b.name.replace(/'/g,"\\'")}')" style="cursor:pointer;"
                        onerror="this.outerHTML='<span class=\\'victory-portrait-emoji\\'>${b.emoji}</span>'">`
                 : `<span class="victory-portrait-emoji">${b.emoji}</span>`;
             return `
@@ -4638,6 +4701,125 @@ function getMoodAverage(days = 30) {
    ═══════════════════════════════════════════ */
 
 const ONBOARD_KEY = 'lifeRPG_onboarded_v1';
+
+// ═══════════════════════════════════════════
+//  V3.1 — ONBOARDING PROGRESSIF
+//  Déblocage gamifié des onglets par activité réelle
+// ═══════════════════════════════════════════
+
+const ONBOARDING_KEY  = 'ascend_onboarding_v1';
+const ONBOARDING_SKIP = 'ascend_onboarding_skip';
+
+// Seuil d'activité : 50% des habitudes daily cochées
+function isActiveDay(dateStr) {
+    const dailyHabits = gameState.habits.filter(h => (h.frequency || 'daily') === 'daily');
+    if (dailyHabits.length === 0) return false;
+    const done = dailyHabits.filter(h => (h.history || []).includes(dateStr)).length;
+    return done / dailyHabits.length >= 0.5;
+}
+
+// Compte les jours d'activité réelle
+function countActiveDays() {
+    const allDates = new Set();
+    gameState.habits.forEach(h => (h.history || []).forEach(d => allDates.add(d)));
+    return [...allDates].filter(d => isActiveDay(d)).length;
+}
+
+// Auto-skip pour les utilisateurs existants (XP déjà accumulé avant V3.1)
+function autoSkipOnboardingIfNeeded() {
+    if (localStorage.getItem(ONBOARDING_SKIP)) return;
+    const totalXP = Object.values(gameState.skills).reduce((s, sk) => s + (sk.totalXP || 0), 0);
+    const habitDays = countActiveDays();
+    // Si l'utilisateur a déjà joué sérieusement → skip onboarding
+    if (totalXP > 200 || habitDays >= 7) {
+        localStorage.setItem(ONBOARDING_SKIP, '1');
+        localStorage.setItem('ascend_active_days', String(habitDays));
+    }
+}
+
+// Retourne les onglets débloqués selon les jours actifs
+function getUnlockedTabs() {
+    if (localStorage.getItem(ONBOARDING_SKIP)) return ['habits','sessions','campagne','profil'];
+    const days = countActiveDays();
+    const tabs = ['habits', 'profil']; // toujours disponibles
+    if (days >= 3)  tabs.push('sessions'); // J3 : Sessions
+    if (days >= 7)  tabs.push('campagne'); // J7 : Épreuves
+    if (days >= 14) tabs.push('journal');  // géré séparément dans profil
+    return [...new Set(tabs)];
+}
+
+function isTabUnlocked(tabName) {
+    return getUnlockedTabs().includes(tabName);
+}
+
+// Met à jour la visibilité des boutons de navigation
+function updateTabBarVisibility() {
+    if (localStorage.getItem(ONBOARDING_SKIP)) return; // tout visible
+    const unlocked = getUnlockedTabs();
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        const tab = btn.dataset.tab;
+        const locked = !unlocked.includes(tab);
+        btn.classList.toggle('tab-locked', locked);
+        btn.disabled = locked;
+        // Ajoute/retire l'indicateur 🔒
+        const existing = btn.querySelector('.tab-lock-icon');
+        if (locked && !existing) {
+            const lock = document.createElement('span');
+            lock.className = 'tab-lock-icon';
+            lock.textContent = '🔒';
+            btn.appendChild(lock);
+        } else if (!locked && existing) {
+            existing.remove();
+        }
+    });
+}
+
+// Vérifie si un onglet vient d'être débloqué et affiche la notif
+function checkTabUnlocks() {
+    if (localStorage.getItem(ONBOARDING_SKIP)) return;
+    const days = countActiveDays();
+    const prev = gameState._activeDays || 0;
+    if (days <= prev) return;
+    gameState._activeDays = days;
+    saveGameState();
+
+    if (prev < 3 && days >= 3) showTabUnlockModal('sessions', '⚡ Sessions débloquées !',
+        'Tu as prouvé ta constance. Il est temps de tracker tes efforts.\nChaque session nourrit les aptitudes de ton compagnon.');
+    if (prev < 7 && days >= 7) showTabUnlockModal('campagne', '⚔️ Épreuves débloquées !',
+        'Une semaine d\'activité réelle. Le monde des Épreuves s\'ouvre à toi.\nAffronte les boss pour gagner des Éclats et faire évoluer ton compagnon.');
+}
+
+function showTabUnlockModal(tabName, title, message) {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+        <div class="modal-box" style="text-align:center;border-color:rgba(245,200,66,0.4);">
+            <div style="font-size:2.5rem;margin-bottom:12px;">🏆</div>
+            <div class="modal-title gold">${title}</div>
+            <p style="color:var(--text-mid);font-size:0.85rem;line-height:1.6;margin:12px 0 20px;white-space:pre-line">${message}</p>
+            <button class="btn-gold" style="width:100%" onclick="this.closest('.modal-overlay').remove();switchTab('${tabName}');">
+                Explorer →
+            </button>
+            <button class="btn-cancel" style="width:100%;margin-top:8px;" onclick="this.closest('.modal-overlay').remove()">
+                Plus tard
+            </button>
+        </div>`;
+    document.body.appendChild(overlay);
+    updateTabBarVisibility();
+}
+
+// Activer le mode "tout débloqué" (utilisateur avancé)
+function unlockAllTabs() {
+    localStorage.setItem(ONBOARDING_SKIP, '1');
+    updateTabBarVisibility();
+    document.getElementById('settings-overlay')?.remove();
+    toast('🔓 Toutes les zones débloquées !', 'success');
+    renderUI();
+}
+
+// ═══════════════════════════════════════════
+//  FIN ONBOARDING
+// ═══════════════════════════════════════════
 
 function checkOnboarding() {
     const done = localStorage.getItem(ONBOARD_KEY);
@@ -6764,7 +6946,7 @@ function creatureCard(stage, branch, state) {
     const cardClass = `creature-card${isHolo ? ' creature-card-holo' : ''}`;
     const stateGlow = state === 'radiant' ? `box-shadow: 0 0 30px ${cfg.glow}, 0 0 60px ${cfg.glow}44;` : '';
 
-    return `<div class="${cardClass}" style="--branch-color:${cfg.color};--branch-glow:${cfg.glow};${stateGlow}">
+    return `<div class="${cardClass}" style="--branch-color:${cfg.color};--branch-glow:${cfg.glow};${stateGlow}" onclick="openImageModal('${imgPath}','${stageLabel.replace(/'/g,"\\'")}')">
         ${isHolo ? '<div class="creature-card-holo-fx"></div>' : ''}
         <img src="${imgPath}"
              alt="${stageLabel}"
@@ -6842,6 +7024,72 @@ function commitRenameCreature() {
     saveGameState();
     document.getElementById('rename-creature-modal')?.remove();
     renderUI();
+}
+
+// ── IMAGE MODAL (zoom) ────────────────────
+function openImageModal(src, title) {
+    if (!src) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.style.cssText = 'background:rgba(0,0,0,0.9);z-index:999;';
+    overlay.innerHTML = `
+        <div style="position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center;gap:12px;">
+            <img src="${src}" alt="${title}"
+                 style="max-width:90vw;max-height:80vh;object-fit:contain;border-radius:12px;box-shadow:0 0 40px rgba(0,0,0,0.8);">
+            <div style="font-family:'Cinzel',serif;font-size:0.9rem;color:rgba(255,255,255,0.7);">${title}</div>
+            <button class="btn-cancel" onclick="this.closest('.modal-overlay').remove()" style="width:120px;">Fermer</button>
+        </div>`;
+    overlay.addEventListener('click', e => { if(e.target===overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
+}
+
+function buildCreatureEvolutionGallery() {
+    const stage  = computeCreatureStage();
+    const branch = computeCreatureBranch();
+    const branches = ['constitution','instinct','vigueur','serenite','agilite','balanced'];
+    const branchLabels = {
+        constitution:'Constitution', instinct:'Instinct', vigueur:'Vigueur',
+        serenite:'Sérénité', agilite:'Agilité', balanced:'Équilibré'
+    };
+
+    const makeCard = (stageN, br, currentStage, currentBranch) => {
+        const path = getCreatureCardPath(stageN, br);
+        const isCurrent = stageN === currentStage && (stageN === 1 || br === currentBranch);
+        const isUnlocked = stageN < currentStage || isCurrent;
+        const cfg = BRANCH_CONFIG[br] || BRANCH_CONFIG.balanced;
+        const stageNames = {1:'Louveteau', 2:'Jeune Loup', 3:'Loup Adulte', 4:'Forme Mythique'};
+        return `<div class="evol-card ${isCurrent ? 'evol-current' : ''} ${isUnlocked ? '' : 'evol-locked'}"
+            style="border-color:${isUnlocked ? cfg.color : 'rgba(255,255,255,0.1)'};${isUnlocked?'cursor:pointer;':''}"
+            ${isUnlocked ? `onclick="openImageModal('${path}','${stageNames[stageN]} — ${branchLabels[br] || ''}')"` : ''}>
+            <img src="${path}" alt="${stageNames[stageN]}"
+                 onerror="this.parentElement.querySelector('.evol-placeholder').style.display='flex';this.style.display='none'"
+                 ${isUnlocked ? '' : 'style="filter:grayscale(1) brightness(0.4)"'}/>
+            <div class="evol-placeholder" style="display:none">${stageN === 1 ? '🐺' : br === 'balanced' ? '✦' : cfg.label[0]}</div>
+            ${isCurrent ? '<div class="evol-current-badge">Actuel</div>' : ''}
+            ${!isUnlocked ? '<div class="evol-lock">🔒</div>' : ''}
+            <div class="evol-label" style="color:${isUnlocked ? cfg.color : 'var(--text-dim)'}">
+                ${stageN === 1 ? 'Louveteau' : branchLabels[br]}
+            </div>
+        </div>`;
+    };
+
+    // Stage 1 — unique
+    let html = `<div class="section-title" style="margin-top:16px;">🐺 Évolutions possibles</div>
+        <div class="evol-gallery">
+            <div class="evol-stage-label">Stade 1</div>
+            ${makeCard(1, 'none', stage, branch)}
+        </div>`;
+
+    // Stages 2 et 3 — une carte par branche
+    [2, 3].forEach(s => {
+        const stageNames = {2:'Stade 2 — Jeune Loup', 3:'Stade 3 — Loup Adulte'};
+        html += `<div class="evol-gallery">
+            <div class="evol-stage-label">${stageNames[s]}</div>
+            ${branches.map(br => makeCard(s, br, stage, branch)).join('')}
+        </div>`;
+    });
+
+    return html;
 }
 
 function openCreatureProfile() {
@@ -7853,6 +8101,10 @@ switchTab(savedTab);
 if (typeof updateMoodFab === 'function') updateMoodFab();
 if (typeof checkOnboarding === 'function') checkOnboarding();
 if (typeof checkBackupReminder === 'function') checkBackupReminder();
+// V3.1: onboarding progressif
+autoSkipOnboardingIfNeeded();
+updateTabBarVisibility();
+checkTabUnlocks();
 
 // V7.0: restore profile subtab
 const savedProfSubtab = localStorage.getItem('lifeRPG_profSubtab');
