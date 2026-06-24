@@ -22,11 +22,11 @@ const SKILL_CONFIG = {
 };
 
 const SKILL_TOOLTIPS = {
-    constitution: 'Sport, cardio, musculation,\nyoga dynamique, vélo, marche...',
-    instinct:     'Lecture, cours en ligne,\npodcasts éducatifs, prise de notes...',
-    vigueur:      'Habitudes quotidiennes,\nroutines, constance, ténacité...',
-    serenite:     'Méditation, respiration,\njournal, marche en nature...',
-    agilite:      'Deep work, code, écriture,\napprentissage concentré...'
+    constitution: '🦴 Constitution\nForce & résistance du corps\n─────────────────\nSport, cardio, musculation\nMarche, vélo, yoga dynamique\nSommeil, hydratation, nutrition',
+    instinct:     '🌙 Instinct\nPerception & intelligence animale\n─────────────────\nLecture, cours en ligne\nPodcasts, prise de notes\nRéflexion, stratégie, veille',
+    vigueur:      '🔥 Vigueur\nÉnergie vitale & ténacité\n─────────────────\nRégularité des habitudes\nRoutines quotidiennes\nConstance & discipline longue durée',
+    serenite:     '🧘 Sérénité\nCalme intérieur & équilibre\n─────────────────\nMéditation, respiration\nJournal, marche en nature\nDéconnexion, temps libre conscient',
+    agilite:      '⚡ Agilité\nPrécision & maîtrise\n─────────────────\nDeep work, code, écriture\nApprentissage concentré\nCréation, projets, artisanat'
 };
 
 const SESSION_XP_CURVES = {
@@ -45,10 +45,14 @@ const SESSION_XP_CURVES = {
     agilite: [
         { min:120, xp:140 }, { min:75, xp:115 },
         { min:45,  xp:85  }, { min:25, xp:50  }, { min:0, xp:0 }
+    ],
+    vigueur: [
+        { min:120, xp:120 }, { min:60, xp:100 },
+        { min:30,  xp:75  }, { min:15, xp:50  }, { min:0, xp:0 }
     ]
 };
 
-const SESSION_THRESHOLDS = { constitution:20, serenite:10, instinct:15, agilite:25 };
+const SESSION_THRESHOLDS = { constitution:20, serenite:10, instinct:15, agilite:25, vigueur:15 };
 const HABIT_XP    = 15;
 const STORAGE_KEY = 'lifeRPGState_v3';
 
@@ -777,7 +781,7 @@ function migrateGameState() {
     if (gameState.skills.sagesse    && !gameState.skills.instinct)     { gameState.skills.instinct     = gameState.skills.sagesse;    delete gameState.skills.sagesse; }
     if (gameState.skills.discipline && !gameState.skills.vigueur)      { gameState.skills.vigueur      = gameState.skills.discipline; delete gameState.skills.discipline; }
     if (gameState.skills.maitrise   && !gameState.skills.agilite)      { gameState.skills.agilite      = gameState.skills.maitrise;   delete gameState.skills.maitrise; }
-    // V2.2.1 — migrer aussi les catégories des habitudes
+    // V2.2.1 — migrer catégories habitudes, tâches ET sessions
     const catMap = { endurance:'constitution', sagesse:'instinct', discipline:'vigueur', maitrise:'agilite' };
     if (Array.isArray(gameState.habits)) {
         gameState.habits.forEach(h => {
@@ -785,10 +789,14 @@ function migrateGameState() {
             if (h.recommendedCategory && catMap[h.recommendedCategory]) h.recommendedCategory = catMap[h.recommendedCategory];
         });
     }
-    // V2.2.1 — migrer aussi les catégories des tâches
     if (Array.isArray(gameState.tasks)) {
         gameState.tasks.forEach(t => {
             if (t.skill && catMap[t.skill]) t.skill = catMap[t.skill];
+        });
+    }
+    if (Array.isArray(gameState.sessions)) {
+        gameState.sessions.forEach(s => {
+            if (s.category && catMap[s.category]) s.category = catMap[s.category];
         });
     }
     if (!gameState.stats)     gameState.stats = { totalHabitsCompleted:0, perfectDays:0, longestStreak:0 };
@@ -1774,7 +1782,7 @@ function openNewSessionModal() {
                 <label>Compétence</label>
                 <select id="ns-cat">
                     <option value="">Choisir une compétence...</option>
-                    ${Object.entries(SKILL_CONFIG).filter(([k])=>k!=='vigueur')
+                    ${Object.entries(SKILL_CONFIG)
                         .map(([k,v])=>`<option value="${k}">${v.icon} ${v.name}</option>`).join('')}
                 </select>
             </div>
@@ -1883,7 +1891,7 @@ function openEditSessionModal(sessionId) {
             <div class="modal-field">
                 <label>Compétence</label>
                 <select id="es-cat">
-                    ${Object.entries(SKILL_CONFIG).filter(([k])=>k!=='vigueur')
+                    ${Object.entries(SKILL_CONFIG)
                         .map(([k,v])=>`<option value="${k}" ${session.category===k?'selected':''}>${v.icon} ${v.name}</option>`).join('')}
                 </select>
             </div>
@@ -2308,15 +2316,12 @@ function updateTopBar() {
 function renderHabitsPage() {
     const avatarStage = document.getElementById('habits-avatar-stage');
     if (avatarStage) {
-        // V2.2: louveteau PNG libre en haut, 5 orbits en ligne en dessous
         const orbits = Object.keys(SKILL_CONFIG).map(key => {
             return `<div class="skill-orbit-flex" onclick="toggleOrbitTooltip(this)">${buildOrbitSVG(key, gameState.skills[key])}</div>`;
         }).join('');
         avatarStage.innerHTML = `
             <div class="avatar-center">${creatureSVG()}</div>
-            <div class="skills-row-container">
-                ${orbits}
-            </div>`;
+            <div class="skills-row-container">${orbits}</div>`;
     }
 
     const unEl = document.getElementById('habit-username');
@@ -2472,9 +2477,7 @@ function renderSessionsPage() {
 
         stage.innerHTML = `
             <div class="avatar-center">${creatureSVG()}</div>
-            <div class="skills-row-container">
-                ${orbits}
-            </div>`;
+            <div class="skills-row-container">${orbits}</div>`;
     }
 
     const list = document.getElementById('sessions-list');
@@ -3781,10 +3784,8 @@ function openDifficultyModal() {
     const currentIdx = DIFF_ORDER.indexOf(currentDiff);
     const xpAcc = inCombat ? (c.bossXPAccumulated||0) : 0;
 
-    // Before combat → all options. During combat → only lower.
-    const options = inCombat
-        ? DIFF_ORDER.filter((_, i) => i <= currentIdx)
-        : DIFF_ORDER;
+    // Toutes les difficultés disponibles avant ET pendant le combat
+    const options = DIFF_ORDER;
 
     const optionsHtml = options.map(diff => {
         const isCurrent = diff === currentDiff;

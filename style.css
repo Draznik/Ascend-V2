@@ -185,18 +185,17 @@ body::after {
     position: relative;
     width: 100%;
     max-width: 600px;
-    margin: 16px auto 32px;
+    margin: 0 auto 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 32px;
+    gap: 16px;
 }
 
 /* Louveteau container - no circular background */
 .avatar-center {
     position: relative;
-    width: auto;
-    height: auto;
+    width: 100%;
     border-radius: 0;
     background: transparent;
     border: none;
@@ -204,14 +203,12 @@ body::after {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: opacity 0.3s;
     overflow: visible;
 }
 
 .avatar-center:hover {
     box-shadow: none;
-    opacity: 0.9;
+    opacity: 1;
 }
 
 /* Superman S SVG */
@@ -1003,15 +1000,15 @@ button { font-family: 'Outfit', sans-serif; cursor: pointer; transition: all 0.2
     background: var(--bg-card2);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 8px 11px;
-    font-size: 0.7rem;
+    padding: 10px 13px;
+    font-size: 0.68rem;
     color: var(--text-mid);
     white-space: pre-line;
     z-index: 50;
     pointer-events: none;
-    min-width: 160px;
+    min-width: 180px;
     text-align: center;
-    line-height: 1.5;
+    line-height: 1.6;
     box-shadow: 0 6px 20px rgba(0,0,0,0.5);
 }
 
@@ -3926,10 +3923,15 @@ button, .tab-btn, .boss-chip, .camp-subtab, .btn-gold, .btn-blue, .btn-cancel {
 /* ══════════════════════════════════════════
    V2.3 — CREATURE CARD (S2/S3/S4)
    ══════════════════════════════════════════ */
+.creature-card-wrap {
+    position: relative;
+    width: 100%;
+}
+
 .creature-card {
     position: relative;
-    width: 200px;
-    aspect-ratio: 2 / 3;
+    width: 100%;
+    aspect-ratio: 3 / 2.8;
     border-radius: 14px;
     overflow: hidden;
     border: 2px solid var(--branch-color, #fff);
@@ -3938,15 +3940,29 @@ button, .tab-btn, .boss-chip, .camp-subtab, .btn-gold, .btn-blue, .btn-cancel {
     transition: transform 0.2s, box-shadow 0.2s;
 }
 .creature-card:hover {
-    transform: scale(1.02);
+    transform: scale(1.01);
     box-shadow: 0 0 32px var(--branch-glow, rgba(255,255,255,0.4));
 }
 .creature-card-img {
     width: 100%; height: 100%;
     object-fit: cover;
-    object-position: center top;
+    object-position: center 20%;
     display: block;
 }
+
+/* Gradient sombre en bas pour lisibilité du badge */
+.creature-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 30%;
+    background: linear-gradient(to top,
+        rgba(0,0,0,0.7) 0%,
+        transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
 .creature-card-badge-top {
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -3955,6 +3971,7 @@ button, .tab-btn, .boss-chip, .camp-subtab, .btn-gold, .btn-blue, .btn-cancel {
     justify-content: space-between;
     align-items: center;
     background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+    z-index: 2;
 }
 .creature-card-stage {
     font-family: 'JetBrains Mono', monospace;
