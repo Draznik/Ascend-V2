@@ -2431,21 +2431,18 @@ function renderSessionsPage() {
     if (typeof renderAmbientPanel === 'function') renderAmbientPanel();
     const stage = document.getElementById('sessions-avatar-stage');
     if (stage) {
-        // V3.1: exact 90° positions — 12h top, 3h right, 6h bottom, 9h left
+        // V2.2: Same layout as Habits — louveteau en haut, 4 compétences en ligne en dessous
         const sessionSkills = ['sagesse','endurance','serenite','maitrise'];
-        // Positions px — centre stage=130px, rayon=95px, angles 12h/3h/6h/9h
-        const positions = [
-            { left:'130px', top:'35px'  },   // 12h — sagesse
-            { left:'225px', top:'130px' },   // 3h  — endurance
-            { left:'130px', top:'225px' },   // 6h  — serenite
-            { left:'35px',  top:'130px' }    // 9h  — maitrise
-        ];
-        const orbits = sessionSkills.map((key, i) => {
+        const orbits = sessionSkills.map((key) => {
             const skill = gameState.skills[key];
-            return `<div class="skill-orbit" style="left:${positions[i].left};top:${positions[i].top}">${buildOrbitSVG(key, skill)}</div>`;
+            return `<div class="skill-orbit-flex" onclick="toggleOrbitTooltip(this)">${buildOrbitSVG(key, skill)}</div>`;
         }).join('');
 
-        stage.innerHTML = `${orbits}<div class="avatar-center">${creatureSVG()}</div>`;
+        stage.innerHTML = `
+            <div class="avatar-center">${creatureSVG()}</div>
+            <div class="skills-row-container">
+                ${orbits}
+            </div>`;
     }
 
     const list = document.getElementById('sessions-list');
@@ -2608,9 +2605,11 @@ function renderProfilPage() {
     if (nameEl)  nameEl.textContent  = gameState.username || 'Hero';
     if (levelEl) levelEl.textContent = `Niveau Global ${getGlobalLevel()}`;
 
-    // Small avatar
-    const smallAvatar = document.getElementById('profil-avatar-small');
-    if (smallAvatar) smallAvatar.innerHTML = creatureSVG();
+    // Avatar — même structure que Habitudes/Sessions
+    const profilStage = document.getElementById('profil-avatar-stage');
+    if (profilStage) {
+        profilStage.innerHTML = `<div class="avatar-center">${creatureSVG()}</div>`;
+    }
 
     // Global XP bar
     const gl = getGlobalLevel();
