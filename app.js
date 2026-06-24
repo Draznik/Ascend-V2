@@ -135,9 +135,9 @@ const ECLAT_RARITIES = {
 };
 
 const DIFF_TO_RARITY = {
-    facile:     'commun',
-    normal:     'rare',
-    difficile:  'epique',
+    commun:     'commun',
+    rare:       'rare',
+    epique:     'epique',
     legendaire: 'legendaire'
     // L'Innommable → 'primordial' handled separately
 };
@@ -153,7 +153,7 @@ function getEclatTypeForAct(act) {
 // WEAPON_POOLS removed V2.1
 
 const BOSS_DATA = [
-    { id:'b01', name:'Sanglier Géant',              act:1, actName:'Les Terres Sauvages', skill:'constitution', xpBase:3500,  timerDays:7,  img:'images/boar_acte_1.webp',   emoji:'🐗', lore:'Une bête ancestrale qui broie les os des imprudents.' },
+    { id:'b01', name:'Sanglier Géant',              act:1, actName:'Les Terres Sauvages', skill:'constitution', xpBase:3500,  timerDays:7,  img:'images/boar_acte_1.jpg', imgLegendaire:'images/boar_legendaire_acte_1.jpg', emoji:'🐗', lore:'Une bête ancestrale qui broie les os des imprudents.' },
     { id:'b02', name:'Brigand des Chemins',          act:1, actName:'Les Terres Sauvages', skill:'vigueur',xpBase:3500,  timerDays:7,  img:'images/bandit_acte_1.webp',   emoji:'🗡️', lore:'Il rôde aux carrefours, attendant les voyageurs seuls.' },
     { id:'b03', name:'Ours des Cimes',               act:1, actName:'Les Terres Sauvages', skill:'agilite', xpBase:3500,  timerDays:7,  img:'images/ours_acte_1.webp',     emoji:'🐻', lore:'Gardien des hauteurs, personne ne passe sans son accord.' },
     { id:'b04', name:'Loup Alpha',                   act:2, actName:'La Forêt Profonde',   skill:'instinct', xpBase:4500,  timerDays:10, img:'images/loup_acte_2.webp',     emoji:'🐺', lore:'Ses yeux dorés voient à travers le brouillard.' },
@@ -2303,13 +2303,25 @@ function renderHabitsPage() {
             <div class="skills-row-container">
                 ${orbits}
             </div>`;
-        // Start wolf animation if stage 1
-        stopWolfAnimation();
-        if (computeCreatureStage() === 1) setTimeout(startWolfAnimation, 100);
+        // Animation wolf — ne pas stopper, elle tourne en permanence
+        if (computeCreatureStage() === 1 && !_wolfAnimTimer) setTimeout(startWolfAnimation, 100);
     }
 
     const unEl = document.getElementById('habit-username');
     if (unEl) unEl.textContent = gameState.username || 'Hero';
+
+    // V2.2.1 — État créature sous le pseudo
+    const stateEl = document.getElementById('habit-creature-state');
+    if (stateEl) {
+        const st = getCreatureState();
+        const stateLabels = {
+            radiant:  '✦ ' + (gameState.creature?.name || 'Loup') + ' est avec toi',
+            waiting:  '◈ Il t\'attend...',
+            sleeping: '◌ Il repose...'
+        };
+        stateEl.textContent  = stateLabels[st] || '';
+        stateEl.className    = `creature-state-label state-${st}`;
+    }
 
     const dlEl = document.getElementById('discipline-level-label');
     if (dlEl) dlEl.textContent = '';
@@ -3528,7 +3540,7 @@ function initCampaign() {
     if (!gameState.campaign) {
         gameState.campaign = {
             currentBossId: null, bossStartDate: null, bossXPAccumulated: 0,
-            bossDefeated: [], difficulty: 'normal',
+            bossDefeated: [], difficulty: 'rare',
             bossVictories: {},
             restUntil: null
             // V2.1: weapons/repairDeadline/brokenWeapons removed
@@ -3537,7 +3549,7 @@ function initCampaign() {
     }
     const c = gameState.campaign;
     if (!c.bossDefeated)   c.bossDefeated = [];
-    if (!c.difficulty)     c.difficulty = 'normal';
+    if (!c.difficulty)     c.difficulty = 'rare';
     if (!c.bossVictories)  c.bossVictories = {};
     if (c.bossXPAccumulated === undefined) c.bossXPAccumulated = 0;
 }
@@ -3560,8 +3572,8 @@ function accumulateBossXP(skillKey, xpAmount) {
 }
 
 function getBossTotalHP(boss) {
-    const diff = { facile:0.6, normal:1.0, difficile:1.6, legendaire:2.5 };
-    return Math.floor(boss.xpBase * (diff[gameState.campaign?.difficulty||'normal'] || 1));
+    const diff = { commun:0.6, rare:1.0, epique:1.6, legendaire:2.5 };
+    return Math.floor(boss.xpBase * (diff[gameState.campaign?.difficulty||'rare'] || 1));
 }
 
 // V5.4: Boss timer aligned on Monday cycles
@@ -3671,7 +3683,7 @@ function defeatBoss(boss) {
     if (!c.bossVictories) c.bossVictories = {};
     const diffRank = d => DIFF_ORDER.indexOf(d);
     const cur = c.bossVictories[boss.id];
-    const nowDiff = c.difficulty || 'normal';
+    const nowDiff = c.difficulty || 'rare';
     if (!cur || diffRank(nowDiff) > diffRank(cur)) {
         c.bossVictories[boss.id] = nowDiff;
     }
@@ -3731,9 +3743,9 @@ function checkCampaignTitleUnlocks() {
 }
 
 // ── Difficulty cycle ──
-const DIFF_ORDER = ['facile','normal','difficile','legendaire'];
-const DIFF_COLORS = { facile:'#4ecdc4', normal:'#3d8ef0', difficile:'#f97316', legendaire:'#f5c842' };
-const DIFF_LABELS = { facile:'Facile', normal:'Normal', difficile:'Difficile', legendaire:'Légendaire' };
+const DIFF_ORDER  = ['commun','rare','epique','legendaire'];
+const DIFF_COLORS = { commun:'#9ca3af', rare:'#4ecdc4', epique:'#9f7aea', legendaire:'#f5c842' };
+const DIFF_LABELS = { commun:'Commun', rare:'Rare', epique:'Épique', legendaire:'Légendaire' };
 
 function cycleDifficulty() {
     // V6.1: cycleDifficulty is now a context-aware modal opener
@@ -3753,7 +3765,7 @@ function openDifficultyModal() {
     const isDefeated = c.bossDefeated.includes(displayBoss.id);
     const isFighting = c.currentBossId === displayBoss.id;
     const inCombat = isFighting && !isDefeated;
-    const currentDiff = c.difficulty || 'normal';
+    const currentDiff = c.difficulty || 'rare';
     const currentIdx = DIFF_ORDER.indexOf(currentDiff);
     const xpAcc = inCombat ? (c.bossXPAccumulated||0) : 0;
 
@@ -3848,7 +3860,7 @@ function rollAndShowLoot(boss, bonusDrop) {
     const c = gameState.campaign;
     if (!gameState.creature) return;
     const eclatType = getEclatTypeForAct(boss.act);
-    let rarity = boss.conditionBased ? 'primordial' : (DIFF_TO_RARITY[c.difficulty || 'normal'] || 'commun');
+    let rarity = boss.conditionBased ? 'primordial' : (DIFF_TO_RARITY[c.difficulty || 'rare'] || 'commun');
     // Fast victory bonus: upgrade rarity by one tier
     if (bonusDrop && !boss.conditionBased) {
         const rarityKeys = Object.keys(ECLAT_RARITIES);
@@ -3976,7 +3988,7 @@ function buildBossTab() {
     const isFighting = c.currentBossId === boss.id;
     const isDefeated = c.bossDefeated.includes(boss.id);
     const isResting  = c.restUntil && new Date(c.restUntil) > getNow();
-    const diff = c.difficulty || 'normal';
+    const diff = c.difficulty || 'rare';
     const totalHP = getBossTotalHP(boss);
     const curHP = Math.max(0, totalHP - (isFighting ? (c.bossXPAccumulated||0) : 0));
     const hpPct = isFighting ? Math.min(100, ((c.bossXPAccumulated||0)/totalHP)*100) : 0;
@@ -3984,7 +3996,6 @@ function buildBossTab() {
     const bgs = {1:'radial-gradient(ellipse at 50% 30%,#2a1a08 0%,#0d0806 100%)',2:'radial-gradient(ellipse at 50% 30%,#091a09 0%,#040904 100%)',3:'radial-gradient(ellipse at 50% 30%,#1a0808 0%,#090404 100%)',4:'radial-gradient(ellipse at 50% 30%,#08080f 0%,#040407 100%)',5:'radial-gradient(ellipse at 50% 30%,#050510 0%,#030308 100%)'};
     // V10.0b: legendary aura around the boss image when fighting in Legendary
     const isLegendFight = isFighting && c.difficulty === 'legendaire';
-    const imgHtml = boss.img ? `<img class="boss-hero-img ${isLegendFight ? 'legend-aura-img' : ''}" src="${boss.img}" alt="${boss.name}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">` : '';
     const phStyle = boss.img ? 'display:none' : '';
     // Timer
     let timerHtml = '';
@@ -4030,7 +4041,7 @@ function buildBossTab() {
     }
     // Loot preview
     const bri = Math.min(RARITY_ORDER.length-1, boss.act);
-    const shift = (DIFF_ORDER.indexOf(c.difficulty||'normal') - 1);
+    const shift = (DIFF_ORDER.indexOf(c.difficulty||'rare') - 1);
     const rawWeights = RARITY_ORDER.map((_,i) => {
         if (i < Math.max(0, bri-2)) return 0;
         const d = i - bri;
@@ -4072,27 +4083,49 @@ function buildBossTab() {
         <span class="boss-act-nav-label"><strong>Acte ${browseAct}</strong> — ${actName} · ${defeatedCount}/${actBosses.length} vaincus</span>
         <button class="boss-act-arrow" ${canNext?'':'disabled'} onclick="navigateDisplayAct(1)">›</button>
     </div>`;
+    // V2.2.1 — Full-art boss card (Pokémon style)
+    const isLegend = diff === 'legendaire';
+    // Image: legendary gets _legendaire variant if available
+    const imgSrc = isLegend && boss.imgLegendaire ? boss.imgLegendaire
+                 : boss.img ? boss.img : '';
+    const rarityColors = {
+        commun:     { border:'#9ca3af', glow:'rgba(156,163,175,0.4)', label:'○ Commun' },
+        rare:       { border:'#4ecdc4', glow:'rgba(78,205,196,0.4)',  label:'◈ Rare' },
+        epique:     { border:'#9f7aea', glow:'rgba(159,122,234,0.5)', label:'◆ Épique' },
+        legendaire: { border:'#f5c842', glow:'rgba(245,200,66,0.6)',  label:'★ Légendaire' }
+    };
+    const rc = rarityColors[diff] || rarityColors.commun;
+    const cardClass = isLegend ? 'boss-card boss-card-legendaire' : 'boss-card';
+    const imgHtml = imgSrc
+        ? `<img class="boss-card-img" src="${imgSrc}" alt="${boss.name}">`
+        : `<div class="boss-card-img-placeholder" style="background:${bgs[boss.act]}">${boss.emoji}</div>`;
     return `
-        <div class="boss-hero-zone">
+        <div class="${cardClass}" style="--card-border:${rc.border};--card-glow:${rc.glow}">
+            ${isLegend ? '<div class="boss-card-holo"></div>' : ''}
             ${imgHtml}
-            <div class="boss-hero-placeholder" style="${phStyle};${bgs[boss.act]}">${boss.emoji}</div>
-            <div class="boss-fade-top"></div><div class="boss-fade-left"></div><div class="boss-fade-right"></div><div class="boss-fade-bottom"></div>
-            <div class="boss-act-badge">Acte ${boss.act}</div>
-            <div class="boss-diff-badge" onclick="cycleDifficulty()" style="color:${DIFF_COLORS[diff]};border-color:${DIFF_COLORS[diff]}44">${DIFF_LABELS[diff]}</div>
-            <div class="boss-name-overlay">
-                <div class="boss-name">${boss.name}</div>
-                <span class="boss-skill-tag" style="color:${skillCfg.color};border-color:${skillCfg.color}44">${skillCfg.icon} ${skillCfg.name}</span>
+            <div class="boss-card-top">
+                <span class="boss-card-act-badge">Acte ${boss.act}</span>
+                <span class="boss-card-rarity" style="color:${rc.border}">${rc.label}</span>
+            </div>
+            <div class="boss-card-bottom">
+                <div class="boss-card-name">${boss.name}</div>
+                <div class="boss-card-skill" style="color:${skillCfg.color}">${skillCfg.icon} ${skillCfg.name}</div>
+                ${!isFighting ? `<div class="boss-card-lore">"${boss.lore}"</div>` : ''}
+                ${isFighting ? `
+                    <div class="boss-hp-row" style="margin-top:8px">
+                        <span class="boss-hp-label">PV</span>
+                        <span class="boss-hp-val">${curHP.toLocaleString()} / ${totalHP.toLocaleString()}</span>
+                    </div>
+                    <div class="boss-hp-bar-bg"><div class="boss-hp-bar-fill" style="width:${hpPct}%"></div></div>
+                    ${timerHtml}
+                ` : ''}
             </div>
         </div>
-        <div style="padding-top:12px">
+        <div style="padding: 0 4px">
+            <button class="boss-diff-btn" onclick="cycleDifficulty()" style="--diff-color:${rc.border}">
+                ⚔️ Difficulté : ${DIFF_LABELS[diff]}
+            </button>
             ${statusHtml}
-            <div class="boss-info-block">
-                ${!isFighting&&!isDefeated?`<p style="font-size:0.78rem;color:var(--text-dim);font-style:italic;margin-bottom:10px">"${boss.lore}"</p>`:''}
-                ${boss.conditionBased ? buildInnommableConditions(boss, isFighting) : `
-                <div class="boss-hp-row"><span class="boss-hp-label">Points de Vie</span><span class="boss-hp-val">${curHP.toLocaleString()} / ${totalHP.toLocaleString()} PV</span></div>
-                <div class="boss-hp-bar-bg"><div class="boss-hp-bar-fill" style="width:${hpPct}%"></div></div>`}
-                ${timerHtml}
-            </div>
             ${actHtml}
             ${eclatPreview}
             ${actNav}
@@ -4108,9 +4141,9 @@ function buildVictoryBoard() {
     if (!c || !c.bossDefeated || c.bossDefeated.length === 0) return '';
     const victories = c.bossVictories || {};
     const DIFF_COLORS = {
-        facile:     '#7dcc7d',
-        normal:     '#8ab4f8',
-        difficile:  '#f5a04a',
+        commun:     '#7dcc7d',
+        rare:       '#8ab4f8',
+        epique:     '#9f7aea',
         legendaire: '#f5c842',
         unknown:    '#777'
     };
@@ -6647,15 +6680,15 @@ function computeCreatureStage() {
 function computeCreatureBranch() {
     const skills = gameState.skills;
     const total = Object.values(skills).reduce((s, sk) => s + sk.totalXP, 0);
-    if (total === 0) return 'primal';
+    if (total === 0) return 'balanced';
     const pcts = {};
     Object.entries(skills).forEach(([k, v]) => { pcts[k] = v.totalXP / total; });
     const maxPct = Math.max(...Object.values(pcts));
     const dominant = Object.entries(pcts).find(([, v]) => v === maxPct)[0];
-    // Primordiale if no skill is truly dominant (±2% around 30%)
-    if (maxPct < 0.32) return 'primal';
-    return { constitution:'power', vigueur:'legion',
-             serenite:'spirit', instinct:'arcane', agilite:'shadow' }[dominant] || 'primal';
+    // Équilibré si aucune compétence ne dépasse 22%
+    if (maxPct <= 0.22) return 'balanced';
+    return { constitution:'constitution', vigueur:'vigueur',
+             serenite:'serenite', instinct:'instinct', agilite:'agilite' }[dominant] || 'balanced';
 }
 
 function getCreatureState() {
@@ -6686,19 +6719,56 @@ function getCreatureStageProgress() {
              label: `${inStage.toLocaleString()} / ${needed.toLocaleString()} XP` };
 }
 
-// ── SVG CREATURES ─────────────────────────────────────
+// ── CREATURE CARD SYSTEM ─────────────────────────────────
+
+// Couleurs et config par branche
+const BRANCH_CONFIG = {
+    balanced:     { color: '#ffffff', glow: 'rgba(255,255,255,0.5)', label: '✦ Équilibré',   holo: true  },
+    constitution: { color: '#f5a623', glow: 'rgba(245,166,35,0.5)',  label: '🦴 Constitution', holo: false },
+    instinct:     { color: '#4ecdc4', glow: 'rgba(78,205,196,0.5)',  label: '🌙 Instinct',     holo: false },
+    vigueur:      { color: '#ff6b35', glow: 'rgba(255,107,53,0.5)',  label: '🔥 Vigueur',      holo: false },
+    serenite:     { color: '#9f7aea', glow: 'rgba(159,122,234,0.5)', label: '🧘 Sérénité',     holo: false },
+    agilite:      { color: '#3d8ef0', glow: 'rgba(61,142,240,0.5)',  label: '⚡ Agilité',      holo: false },
+};
+
+function getCreatureCardPath(stage, branch) {
+    if (stage === 1) return null; // S1 uses animation frames
+    if (stage === 2) return `images/creature/wolf_s2_${branch}.jpg`;
+    if (stage === 3) return `images/creature/wolf_s3_${branch}.jpg`;
+    if (stage === 4) return `images/creature/wolf_s4_${branch}.jpg`;
+    return null;
+}
 
 function creatureSVG() {
     const c = gameState.creature;
     const stage = c ? computeCreatureStage() : 1;
     const state = getCreatureState();
-    const branch = c?.branch || null;
-    switch (stage) {
-        case 1: return creatureSVGStage1(state);
-        case 2: return creatureSVGStage2(state);
-        case 3: return creatureSVGStage3(state, branch);
-        default: return creatureSVGStage4(state, branch);
-    }
+    const branch = computeCreatureBranch();
+
+    if (stage === 1) return creatureSVGStage1(state);
+    return creatureCard(stage, branch, state);
+}
+
+function creatureCard(stage, branch, state) {
+    const cfg = BRANCH_CONFIG[branch] || BRANCH_CONFIG.balanced;
+    const imgPath = getCreatureCardPath(stage, branch);
+    const stageLabel = stage === 2 ? 'Jeune Loup' : stage === 3 ? 'Loup Adulte' : 'Forme Mythique';
+    const isHolo = cfg.holo || stage >= 3;
+    const cardClass = `creature-card${isHolo ? ' creature-card-holo' : ''}`;
+    const stateGlow = state === 'radiant' ? `box-shadow: 0 0 30px ${cfg.glow}, 0 0 60px ${cfg.glow}44;` : '';
+
+    return `<div class="${cardClass}" style="--branch-color:${cfg.color};--branch-glow:${cfg.glow};${stateGlow}">
+        ${isHolo ? '<div class="creature-card-holo-fx"></div>' : ''}
+        <img src="${imgPath}"
+             alt="${stageLabel}"
+             class="creature-card-img"
+             onerror="this.src='images/wolf/wolf_s1_f1.png'"/>
+        <div class="creature-card-badge-top">
+            <span class="creature-card-stage">${stageLabel}</span>
+            <span class="creature-card-branch" style="color:${cfg.color}">${cfg.label}</span>
+        </div>
+        ${state === 'sleeping' ? '<div class="creature-img-overlay-sleep">😴</div>' : ''}
+    </div>`;
 }
 
 function creatureSVGStage1(state) {
@@ -6710,7 +6780,7 @@ function creatureSVGStage1(state) {
         : state === 'radiant'
         ? '<div class="creature-img-overlay-glow creature-aura-ring"></div>'
         : '';
-    return `<div class="${stateClass}" id="wolf-anim-wrap">
+    return `<div class="${stateClass}" id="wolf-anim-wrap" onclick="startWolfAnimation()" style="cursor:pointer;">
         <img id="wolf-anim-img" src="images/wolf/wolf_s1_f1.png" alt="Louveteau" class="creature-img creature-img-stage1"/>
         ${eyeOverlay}
     </div>`;
@@ -6718,34 +6788,47 @@ function creatureSVGStage1(state) {
 
 // V2.2.1 — Wolf animation engine (palindrome loop)
 let _wolfAnimTimer = null;
+let _wolfAnimIdx   = 0;
+
+const WOLF_FRAMES = [
+    { src: 'images/wolf/wolf_s1_f1.png', duration: 3500 },
+    { src: 'images/wolf/wolf_s1_f2.png', duration: 900  },
+    { src: 'images/wolf/wolf_s1_f3.png', duration: 1000 },
+    { src: 'images/wolf/wolf_s1_f4.png', duration: 900  },
+    { src: 'images/wolf/wolf_s1_f5.png', duration: 1000 },
+    { src: 'images/wolf/wolf_s1_f6.png', duration: 900  },
+    { src: 'images/wolf/wolf_s1_f7.png', duration: 3500 },
+    { src: 'images/wolf/wolf_s1_f6.png', duration: 900  },
+    { src: 'images/wolf/wolf_s1_f5.png', duration: 1000 },
+    { src: 'images/wolf/wolf_s1_f4.png', duration: 900  },
+    { src: 'images/wolf/wolf_s1_f3.png', duration: 1000 },
+    { src: 'images/wolf/wolf_s1_f2.png', duration: 900  },
+];
+
 function startWolfAnimation() {
-    if (_wolfAnimTimer) return; // already running
-    const frames = [
-        { src: 'images/wolf/wolf_s1_f1.png', duration: 2000 },
-        { src: 'images/wolf/wolf_s1_f2.png', duration: 400  },
-        { src: 'images/wolf/wolf_s1_f3.png', duration: 500  },
-        { src: 'images/wolf/wolf_s1_f4.png', duration: 400  },
-        { src: 'images/wolf/wolf_s1_f5.png', duration: 500  },
-        { src: 'images/wolf/wolf_s1_f6.png', duration: 400  },
-        { src: 'images/wolf/wolf_s1_f7.png', duration: 2000 },
-        { src: 'images/wolf/wolf_s1_f6.png', duration: 400  },
-        { src: 'images/wolf/wolf_s1_f5.png', duration: 500  },
-        { src: 'images/wolf/wolf_s1_f4.png', duration: 400  },
-        { src: 'images/wolf/wolf_s1_f3.png', duration: 500  },
-        { src: 'images/wolf/wolf_s1_f2.png', duration: 400  },
-    ];
-    let idx = 0;
-    function next() {
+    if (_wolfAnimTimer) return; // déjà en cours
+    _wolfAnimIdx = 0;
+    function tick() {
         const img = document.getElementById('wolf-anim-img');
-        if (!img) { _wolfAnimTimer = null; return; } // DOM gone, stop
-        img.src = frames[idx].src;
-        _wolfAnimTimer = setTimeout(() => {
-            idx = (idx + 1) % frames.length;
-            next();
-        }, frames[idx].duration);
+        if (!img) { _wolfAnimTimer = null; return; }
+        const frame = WOLF_FRAMES[_wolfAnimIdx];
+        img.src = frame.src;
+        _wolfAnimIdx++;
+        if (_wolfAnimIdx < WOLF_FRAMES.length) {
+            // Frames restantes → continuer
+            _wolfAnimTimer = setTimeout(tick, frame.duration);
+        } else {
+            // Fin du cycle → revenir sur F1 et stopper
+            _wolfAnimTimer = setTimeout(() => {
+                const i = document.getElementById('wolf-anim-img');
+                if (i) i.src = 'images/wolf/wolf_s1_f1.png';
+                _wolfAnimTimer = null;
+            }, frame.duration);
+        }
     }
-    next();
+    tick();
 }
+
 function stopWolfAnimation() {
     if (_wolfAnimTimer) { clearTimeout(_wolfAnimTimer); _wolfAnimTimer = null; }
 }
@@ -8076,6 +8159,9 @@ loadGameState();
 renderDebugToggleBtn();
 const savedTab = localStorage.getItem('lifeRPG_tab_v3') || 'habits';
 switchTab(savedTab);
+
+// V2.2.1 — Start wolf animation immediately (runs forever)
+if (computeCreatureStage() === 1) setTimeout(startWolfAnimation, 200);
 
 if (typeof updateMoodFab === 'function') updateMoodFab();
 if (typeof checkOnboarding === 'function') checkOnboarding();

@@ -1386,6 +1386,20 @@ button { font-family: 'Outfit', sans-serif; cursor: pointer; transition: all 0.2
     width: 36px; height: 40px;
 }
 
+/* État créature — entre pseudo et titre */
+.creature-state-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-align: center;
+    letter-spacing: 0.05em;
+    min-height: 16px;
+    margin: 2px 0;
+}
+.creature-state-label.state-radiant  { color: #f5c842; }
+.creature-state-label.state-waiting  { color: var(--text-dim); }
+.creature-state-label.state-sleeping { color: #555; }
+
 /* ═══════════════════════════════════════════
    LIFE RPG V5 — Additions
    ═══════════════════════════════════════════ */
@@ -1640,24 +1654,161 @@ button, .tab-btn, .boss-chip, .camp-subtab, .btn-gold, .btn-blue, .btn-cancel {
 .camp-subtab.active { color: var(--gold); border-bottom-color: var(--gold); background: rgba(245,200,66,0.04); }
 
 /* ── Boss hero image zone ── */
-.boss-hero-zone {
-    position: relative; width: calc(100% + 32px); margin-left: -16px;
-    aspect-ratio: 3 / 4; max-height: 70vh;
-    overflow: hidden; background: #0a0c0a;
+/* ══════════════════════════════════════════
+   V2.2.1 — BOSS CARD — Full-art Pokémon style
+   ══════════════════════════════════════════ */
+.boss-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    max-height: 70vh;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid var(--card-border, #9ca3af);
+    box-shadow: 0 0 18px var(--card-glow, rgba(156,163,175,0.3)),
+                0 4px 32px rgba(0,0,0,0.8);
+    margin-bottom: 16px;
 }
-.boss-hero-img { width: 100%; height: 100%; object-fit: cover; object-position: center center; display: block; }
-.boss-hero-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 80px; }
-.boss-fade-top    { position:absolute;top:0;left:0;right:0;height:50px;background:linear-gradient(to bottom,var(--bg) 0%,transparent 100%);pointer-events:none; }
-.boss-fade-left   { position:absolute;top:0;left:0;width:30px;height:100%;background:linear-gradient(to right,var(--bg) 0%,transparent 100%);pointer-events:none; }
-.boss-fade-right  { position:absolute;top:0;right:0;width:30px;height:100%;background:linear-gradient(to left,var(--bg) 0%,transparent 100%);pointer-events:none; }
-.boss-fade-bottom { position:absolute;bottom:0;left:0;right:0;height:90px;background:linear-gradient(to top,var(--bg) 0%,rgba(7,9,15,0.5) 35%,transparent 100%);pointer-events:none; }
-.boss-act-badge { position:absolute;top:14px;left:14px;background:rgba(0,0,0,0.6);border:0.5px solid rgba(245,200,66,0.35);border-radius:6px;padding:3px 9px;font-size:0.68rem;font-family:'JetBrains Mono',monospace;color:var(--gold); }
-.boss-diff-badge { position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.6);border:0.5px solid rgba(61,142,240,0.4);border-radius:6px;padding:3px 9px;font-size:0.68rem;font-family:'JetBrains Mono',monospace;color:var(--blue);cursor:pointer;transition:all 0.2s; }
-.boss-name-overlay { position:absolute;bottom:12px;left:14px;right:14px;pointer-events:none; }
-.boss-name-overlay .boss-name { font-family:'Cinzel',serif;font-size:1.25rem;font-weight:900;color:#fff;letter-spacing:0.5px;text-shadow:0 1px 4px rgba(0,0,0,.95),0 2px 16px rgba(0,0,0,.85);margin-bottom:4px; }
-.boss-skill-tag { display:inline-block;font-size:0.68rem;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:4px;border:0.5px solid;background:rgba(0,0,0,0.55); }
+.boss-card-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+}
+.boss-card-img-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+}
+/* Top overlay — acte + rareté */
+.boss-card-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+}
+.boss-card-act-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gold);
+    background: rgba(0,0,0,0.55);
+    border: 0.5px solid rgba(245,200,66,0.35);
+    border-radius: 6px;
+    padding: 3px 9px;
+}
+.boss-card-rarity {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    background: rgba(0,0,0,0.55);
+    border-radius: 6px;
+    padding: 3px 9px;
+    border: 0.5px solid currentColor;
+}
+/* Bottom overlay — nom + compétence + lore */
+.boss-card-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 14px 16px 16px;
+    background: linear-gradient(to top,
+        rgba(0,0,0,0.92) 0%,
+        rgba(0,0,0,0.75) 50%,
+        transparent 100%);
+}
+.boss-card-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.95);
+    margin-bottom: 4px;
+}
+.boss-card-skill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    margin-bottom: 6px;
+}
+.boss-card-lore {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.65);
+    font-style: italic;
+    line-height: 1.4;
+}
 
-/* ── Boss info ── */
+/* ★ Légendaire — shimmer holographique */
+.boss-card-legendaire {
+    border-width: 2.5px;
+    border-image: linear-gradient(135deg,
+        #ff0080, #ff8c00, #f5c842,
+        #40e0d0, #9f7aea, #ff0080) 1;
+    border-style: solid;
+    border-radius: 16px;
+    animation: legendBorderSpin 4s linear infinite;
+}
+/* Holo diagonal sweep — balayage arc-en-ciel diagonal */
+.boss-card-holo {
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 2;
+}
+.boss-card-holo::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -150%;
+    width: 60%;
+    height: 200%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 0, 128, 0.13),
+        rgba(255, 140, 0, 0.16),
+        rgba(245, 200, 66, 0.20),
+        rgba(64, 224, 208, 0.16),
+        rgba(159, 122, 234, 0.13),
+        transparent
+    );
+    transform: rotate(25deg);
+    animation: holoDiagonalSweep 3s ease-in-out infinite;
+}
+@keyframes holoDiagonalSweep {
+    0%   { left: -150%; }
+    100% { left: 200%; }
+}
+@keyframes legendBorderSpin {
+    0%   { box-shadow: 0 0 20px rgba(245,200,66,0.5), 0 0 40px rgba(159,122,234,0.3); }
+    33%  { box-shadow: 0 0 20px rgba(78,205,196,0.5), 0 0 40px rgba(245,200,66,0.3); }
+    66%  { box-shadow: 0 0 20px rgba(159,122,234,0.5), 0 0 40px rgba(78,205,196,0.3); }
+    100% { box-shadow: 0 0 20px rgba(245,200,66,0.5), 0 0 40px rgba(159,122,234,0.3); }
+}
+
+/* Bouton difficulté — hors de la carte, bien visible */
+.boss-diff-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--diff-color, #9ca3af);
+    border-radius: 10px;
+    color: var(--diff-color, #9ca3af);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.boss-diff-btn:hover { background: rgba(255,255,255,0.08); }
+
+
 .boss-info-block { padding:12px 0 4px; }
 .boss-hp-row { display:flex;justify-content:space-between;align-items:center;font-size:0.72rem;margin-bottom:5px;font-family:'JetBrains Mono',monospace; }
 .boss-hp-label { color:var(--text-dim); }
@@ -3770,4 +3921,90 @@ button, .tab-btn, .boss-chip, .camp-subtab, .btn-gold, .btn-blue, .btn-cancel {
 }
 .creature-img-wrap.celebrating .creature-img {
     animation: wolfWakeUp 1.2s ease-in-out, creatureBreathe 3.5s ease-in-out 1.2s infinite;
+}
+
+/* ══════════════════════════════════════════
+   V2.3 — CREATURE CARD (S2/S3/S4)
+   ══════════════════════════════════════════ */
+.creature-card {
+    position: relative;
+    width: 200px;
+    aspect-ratio: 2 / 3;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid var(--branch-color, #fff);
+    box-shadow: 0 0 20px var(--branch-glow, rgba(255,255,255,0.3));
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.creature-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 32px var(--branch-glow, rgba(255,255,255,0.4));
+}
+.creature-card-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+}
+.creature-card-badge-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 8px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+}
+.creature-card-stage {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.7);
+}
+.creature-card-branch {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 600;
+}
+
+/* Holographique — équilibré + S3+ */
+.creature-card-holo {
+    border-image: linear-gradient(135deg,
+        #ff0080, #ff8c00, #f5c842,
+        #40e0d0, #9f7aea, #ff0080) 1;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 14px;
+    animation: creatureCardGlow 4s linear infinite;
+}
+.creature-card-holo-fx {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 2;
+}
+.creature-card-holo-fx::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -150%;
+    width: 60%; height: 200%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255,0,128,0.1),
+        rgba(255,140,0,0.13),
+        rgba(245,200,66,0.16),
+        rgba(64,224,208,0.13),
+        rgba(159,122,234,0.1),
+        transparent
+    );
+    transform: rotate(25deg);
+    animation: holoDiagonalSweep 3s ease-in-out infinite;
+}
+@keyframes creatureCardGlow {
+    0%   { box-shadow: 0 0 20px rgba(245,200,66,0.5); }
+    33%  { box-shadow: 0 0 20px rgba(78,205,196,0.5); }
+    66%  { box-shadow: 0 0 20px rgba(159,122,234,0.5); }
+    100% { box-shadow: 0 0 20px rgba(245,200,66,0.5); }
 }
