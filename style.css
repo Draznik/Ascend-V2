@@ -168,6 +168,20 @@ body::after {
 .tab-btn.active     { color: var(--gold); }
 .tab-btn.active .tab-icon { transform: translateY(-2px); filter: drop-shadow(0 0 6px var(--gold)); }
 
+/* V3.1 — Onglet verrouillé */
+.tab-btn.tab-locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+.tab-btn.tab-locked:hover { color: var(--text-dim); }
+.tab-btn.tab-locked:hover .tab-icon { transform: none; }
+.tab-lock-icon {
+    font-size: 0.6rem;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}
+
 /* ── Pages ── */
 .page { display: none; padding-top: 12px; animation: pageIn 0.3s ease-out; }
 .page.active { display: block; }
@@ -4024,4 +4038,205 @@ button, .tab-btn, .boss-chip, .camp-subtab, .btn-gold, .btn-blue, .btn-cancel {
     33%  { box-shadow: 0 0 20px rgba(78,205,196,0.5); }
     66%  { box-shadow: 0 0 20px rgba(159,122,234,0.5); }
     100% { box-shadow: 0 0 20px rgba(245,200,66,0.5); }
+}
+
+/* ══════════════════════════════════════════
+   V3.1 — BOSS LIST (vertical navigation)
+   ══════════════════════════════════════════ */
+.boss-list-wrap {
+    margin-top: 16px;
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.boss-list-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--gold);
+    padding: 10px 14px;
+    background: rgba(245,200,66,0.06);
+    border-bottom: 0.5px solid var(--border);
+    letter-spacing: 0.5px;
+}
+.boss-list-act {
+    border-bottom: 0.5px solid var(--border);
+}
+.boss-list-act:last-child { border-bottom: none; }
+.boss-list-act-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    padding: 6px 14px;
+    background: rgba(255,255,255,0.02);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.boss-list-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 0.5px solid rgba(255,255,255,0.03);
+}
+.boss-list-row:last-child { border-bottom: none; }
+.boss-list-row:hover { background: rgba(255,255,255,0.04); }
+.boss-list-row.active { background: rgba(245,200,66,0.08); }
+.boss-list-row.locked { opacity: 0.4; cursor: default; }
+.boss-list-emoji { font-size: 1.1rem; flex-shrink: 0; }
+.boss-list-name { flex: 1; font-size: 0.82rem; color: var(--text-mid); }
+.boss-list-row.active .boss-list-name { color: var(--gold); font-weight: 600; }
+.boss-list-status { font-size: 0.8rem; flex-shrink: 0; }
+
+/* ══════════════════════════════════════════
+   V3.1 — CREATURE EVOLUTION GALLERY
+   ══════════════════════════════════════════ */
+.evol-gallery {
+    margin-bottom: 12px;
+}
+.evol-stage-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    padding-left: 2px;
+}
+.evol-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.evol-card {
+    position: relative;
+    width: calc(33% - 6px);
+    aspect-ratio: 2 / 3;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.03);
+}
+.evol-card img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+.evol-card.evol-current {
+    border-width: 2px;
+    box-shadow: 0 0 12px rgba(245,200,66,0.3);
+}
+.evol-current-badge {
+    position: absolute;
+    top: 4px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--gold);
+    color: #000;
+    font-size: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.evol-lock {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    opacity: 0.7;
+}
+.evol-placeholder {
+    width: 100%; height: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--text-dim);
+}
+.evol-label {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 4px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+}
+
+/* Boss chips — séparateurs actes */
+.boss-chips-act-group { display: contents; }
+.boss-chips-act-sep {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    font-size: 0.58rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    white-space: nowrap;
+    align-self: center;
+    flex-shrink: 0;
+}
+
+/* ══ Direction évolution ══ */
+.creature-direction-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-align: center;
+    margin: 2px 0 4px;
+    min-height: 16px;
+}
+
+/* ══ Redirect branch grid ══ */
+.redirect-branch-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 8px 0;
+}
+.redirect-branch-btn {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1.5px solid var(--branch-color, #fff);
+    background: transparent;
+    color: var(--branch-color, #fff);
+    font-size: 0.72rem;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s, background 0.2s;
+    font-family: 'JetBrains Mono', monospace;
+}
+.redirect-branch-btn:hover { opacity: 0.9; }
+.redirect-branch-btn.active {
+    opacity: 1;
+    background: color-mix(in srgb, var(--branch-color) 15%, transparent);
+}
+
+/* ══ Défi équilibre ══ */
+.balance-challenge-card {
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    background: rgba(255,255,255,0.04);
+    animation: creatureCardGlow 4s linear infinite;
+}
+.balance-challenge-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+.balance-challenge-req {
+    background: rgba(245,200,66,0.1);
+    border: 1px solid rgba(245,200,66,0.3);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    color: var(--gold);
+    margin: 8px 0;
 }

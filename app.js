@@ -774,7 +774,33 @@ function saveGameState() {
 // so old backups always get every migration. Add any future migration HERE only.
 function migrateGameState() {
     if (!gameState) return;
+    // V3.1 — Nettoyer les quêtes avec skills invalides
+    const validSkills = ['constitution','instinct','vigueur','serenite','agilite'];
+    if (gameState.quests?.daily) {
+        gameState.quests.daily = gameState.quests.daily.filter(q =>
+            !q.skill || validSkills.includes(q.skill)
+        );
+    }
+    if (gameState.quests?.weeklyArr) {
+        gameState.quests.weeklyArr = gameState.quests.weeklyArr.filter(q =>
+            !q || !q.skill || validSkills.includes(q.skill)
+        );
+    }
     if (typeof gameState._activeDays !== 'number') gameState._activeDays = 0;
+    // V3.1 backward compat — si balancedConfirmed déjà set dans ancienne version, conserver
+    if (gameState.creature?.balancedConfirmed === true) {
+        // Déjà obtenu, rien à faire
+    } else if (gameState.creature && !gameState.creature.balancedWindowStart) {
+        // Vérifier si le joueur est équilibré depuis longtemps (XP suffisant)
+        const total = Object.values(gameState.skills||{}).reduce((s, sk) => s + (sk.totalXP||0), 0);
+        if (total > 0) {
+            const maxPct = Math.max(...Object.values(gameState.skills).map(s => (s.totalXP||0) / total));
+            if (maxPct <= 0.23) {
+                // Ouvrir la fenêtre d'activation maintenant pour les joueurs existants
+                gameState.creature.balancedWindowStart = new Date().toISOString();
+            }
+        }
+    }
     if (!gameState.username)  gameState.username = 'Hero';
     if (!gameState.skills)    gameState.skills = { constitution:{level:1,currentXP:0,totalXP:0}, instinct:{level:1,currentXP:0,totalXP:0}, vigueur:{level:1,currentXP:0,totalXP:0}, serenite:{level:1,currentXP:0,totalXP:0}, agilite:{level:1,currentXP:0,totalXP:0} };
     // V2.2.1 — migration anciens noms → nouveaux noms aptitudes bête
@@ -1415,6 +1441,7 @@ function checkQuestProgress() {
             } else {
                 toast(`🗡️ Quête accomplie! +${quest.xp} XP → ${cfg.name}`, 'success');
             }
+            checkFormChangeCompletion();
         }
     });
 }
@@ -2321,6 +2348,7 @@ function renderUI() {
     autoSkipOnboardingIfNeeded();
     updateTabBarVisibility();
     checkTabUnlocks();
+    checkBalanceWindow(); // V3.1 — détecter quand équilibre atteint
     // V6.0b fix: render title display on every UI update (was lost on reload)
     if (typeof renderTitleDisplay === 'function') renderTitleDisplay();
     // V6.0b fix: update mood FAB on every render so it resets at midnight
@@ -2380,6 +2408,19 @@ function renderHabitsPage() {
         };
         stateEl.textContent  = stateLabels[st] || '';
         stateEl.className    = `creature-state-label state-${st}`;
+    }
+
+    // V3.1 — Message de direction évolutive
+    const dirEl = document.getElementById('habit-direction-label');
+    if (dirEl) {
+        const dir = getDirectionInfo();
+        if (dir) {
+            const pctStr = Math.round(dir.pct * 100) + '%';
+            const icon = dir.status === 'confirmed' ? '🐾' : dir.status === 'alert' ? '⚠️' : '✦';
+            dirEl.innerHTML = `<span style="color:${dir.color}">${icon} ${dir.label}</span>` +
+                (dir.status !== 'balanced' ? ` <span style="color:var(--text-dim);font-size:0.6rem">(${pctStr})</span>` : '');
+            dirEl.style.display = 'block';
+        }
     }
 
     const dlEl = document.getElementById('discipline-level-label');
@@ -3704,16 +3745,17 @@ function startBossFight(bossId) {
     if (!isBossUnlocked(bossId)) { toast('Boss verrouillé.','error'); return; }
     const boss = BOSS_DATA.find(b => b.id === bossId);
     if (!boss) return;
+    applyLegendaryLockIfNeeded(); // Force légendaire si défi équilibré actif
     c.currentBossId = bossId;
     c.bossStartDate = getNow().toISOString();
     c.bossXPAccumulated = 0;
     saveGameState();
     renderUI();
     const isRefight = c.bossDefeated.includes(bossId);
-    // V5.4: actual days based on Monday cycle
     const endDate = getBossEndDate(c.bossStartDate);
     const days = Math.round((endDate - new Date(c.bossStartDate)) / 86400000);
-    toast(`⚔️ ${isRefight ? 'Re-affrontement' : 'Combat lancé'} — ${days} jours pour vaincre ${boss.name} !`, 'success');
+    const legendMsg = gameState.creature?.legendaryLock ? ' ⚖️ Légendaire forcé (défi Équilibré)' : '';
+    toast(`⚔️ ${isRefight ? 'Re-affrontement' : 'Combat lancé'} — ${days} jours pour vaincre ${boss.name} !${legendMsg}`, 'success');
 }
 
 // V5.4: Trigger a refight of an already defeated boss
@@ -3725,6 +3767,7 @@ function startBossRefight(bossId) {
     if (c.currentBossId) { toast('Termine ton combat actuel d\'abord.','error'); return; }
     const boss = BOSS_DATA.find(b => b.id === bossId);
     if (!boss) return;
+    applyLegendaryLockIfNeeded(); // Force légendaire si défi équilibré actif
     c.currentBossId = bossId;
     c.bossStartDate = getNow().toISOString();
     c.bossXPAccumulated = 0;
@@ -3733,7 +3776,8 @@ function startBossRefight(bossId) {
     renderUI();
     const endDate = getBossEndDate(c.bossStartDate);
     const days = Math.round((endDate - new Date(c.bossStartDate)) / 86400000);
-    toast(`⚔️ Re-affrontement lancé — ${days} jours, ${boss.name} !`, 'success');
+    const legendMsg = gameState.creature?.legendaryLock ? ' ⚖️ Légendaire forcé' : '';
+    toast(`⚔️ Re-affrontement lancé — ${days} jours, ${boss.name} !${legendMsg}`, 'success');
 }
 
 function defeatBoss(boss) {
@@ -3758,6 +3802,9 @@ function defeatBoss(boss) {
     }
     c.currentBossId = null; c.bossStartDate = null; c.bossXPAccumulated = 0;
     c._isRefight = false;
+
+    // V3.1 — Défi équilibré
+    checkBalancedChallengeProgress(boss, nowDiff);
     // V2.0: available at 0h00 of the next day (replaces 48h and Monday-lock)
     c.restUntil = getBossAvailableAfterVictory().toISOString();
     // V6.2 fix: reset display boss cache so next boss appears without reload
@@ -4317,7 +4364,7 @@ function buildQuetesTabCamp() {
         const done=completedIds.includes(quest.id);
         const prog=getQuestProgress(quest);
         const sk=getQuestSkill(quest);
-        const scfg=SKILL_CONFIG[sk];
+        const scfg = SKILL_CONFIG[sk] || { color:'#888', icon:'⚙️', name: sk };
         const diffClass=isWeekly?'weekly':(quest.xp>=120?'hard':quest.xp>=80?'medium':'easy');
         const progHtml=(!done&&!prog.blocked)?`<div class="quest-prog-row"><div class="quest-prog-bg"><div class="quest-prog-fill" style="width:${Math.round(prog.pct)}%;background:${scfg.color}"></div></div><span class="quest-prog-label">${prog.text}</span></div>`:'';
         const bossTag=activeBoss&&quest.skill===activeBoss.skill?`<span class="camp-q-boss-badge">⚔️ Boss</span>`:'';
@@ -4334,11 +4381,154 @@ function buildQuetesTabCamp() {
             </div>
         </div>`;
     };
+    // Quête confirmation équilibre
+    const branch = computeCreatureBranch();
+    const cr = gameState.creature;
+    let balancedHtml = '';
+
+    if (cr?.balancedConfirmed) {
+        // Déjà obtenu — rien à afficher
+    } else if (branch === 'balanced_challenge') {
+        const daysLeft = Math.max(0, 7 - (getNow() - new Date(cr.balancedChallengeStart)) / 86400000).toFixed(1);
+        const s3Choice = cr.balancedS3Choice;
+        const actBossIds = { act2: ['b04','b05','b06'], act3: ['b07','b08','b09'] };
+        const required = s3Choice ? actBossIds[s3Choice] : null;
+        const progress = required ? (cr.balancedS3Progress||[]).filter(id => required.includes(id)).length : null;
+        balancedHtml = `<div class="balance-challenge-card" style="border-color:rgba(78,205,196,0.5)">
+            <div class="balance-challenge-title">⚔️ Défi Équilibré en cours</div>
+            <div class="balance-challenge-req">
+                ${required ? `🎯 Acte ${s3Choice === 'act2' ? 2 : 3} en Légendaire : ${progress}/${required.length} boss vaincus` : '⚔️ Bat un boss en Légendaire'}
+            </div>
+            <p style="color:var(--text-dim);font-size:0.7rem;margin-top:6px">⏳ ${daysLeft} jours restants</p>
+        </div>`;
+    } else if (branch === 'balanced_pending') {
+        const daysLeft = isBalancedWindowOpen()
+            ? Math.max(0, 7 - (getNow() - new Date(cr?.balancedWindowStart||getNow())) / 86400000).toFixed(1)
+            : null;
+        // Calculer les quêtes nécessaires pour l'équilibre
+        const bqJobs = calculateBalanceQuests();
+        const bqHtml = bqJobs.length > 0
+            ? `<div class="balance-challenge-req" style="margin-bottom:8px">
+                📊 Pour atteindre l'équilibre, tu dois :<br>
+                ${bqJobs.map(q => `— ${Math.ceil(q.xp/4)}+ min de ${SKILL_CONFIG[q.skill]?.icon} ${SKILL_CONFIG[q.skill]?.name}`).join('<br>')}
+               </div>`
+            : `<div class="balance-challenge-req" style="border-color:rgba(78,205,196,0.5);color:#4ecdc4">✅ Ton compagnon est déjà équilibré !</div>`;
+        const act2Done = hasBeatenAllAct(2);
+        const xpStage = gameState.creature?.totalXPInvested || 0;
+        const couldBeS3 = xpStage >= 21000 && !act2Done;
+        const blockMsg = couldBeS3
+            ? `<div class="balance-challenge-req" style="border-color:rgba(245,166,35,0.5);color:#f5a623;margin-bottom:8px">
+                🔒 Tu as l'XP du stade 3 mais tu dois d'abord battre tous les boss de l'Acte 2 pour y accéder.<br>
+                <small>Le défi équilibré actuel est pour le stade 2 (1 boss légendaire).</small>
+               </div>` : '';
+        balancedHtml = `<div class="balance-challenge-card">
+            <div class="balance-challenge-title">⚖️ Forme Équilibrée disponible</div>
+            ${blockMsg}
+            ${bqHtml}
+            ${daysLeft !== null
+                ? `<button class="btn-gold" style="width:100%;font-size:0.8rem" onclick="activateBalancedChallenge()">
+                    ⚔️ Activer le Défi Équilibré (${daysLeft}j restants)
+                   </button>`
+                : `<p style="color:var(--gold);font-size:0.75rem">⏳ Fenêtre expirée — reprends l'équilibre pour réouvrir une fenêtre.</p>`}
+        </div>`;
+    }
+
+    // Section redirection évolution
+    const dir = getDirectionInfo();
+    const stage = computeCreatureStage();
+    const currentBranch = computeCreatureBranch();
+    const targetBranch = gameState.creature?.targetBranch;
+    const redirectWindow = gameState.creature?.redirectWindowStart;
+    const today = getLocalDateStr(getNow());
+    const redirectDaysLeft = redirectWindow
+        ? Math.max(0, 4 - (getNow() - new Date(redirectWindow)) / 86400000)
+        : null;
+    const redirectExpired = redirectDaysLeft !== null && redirectDaysLeft <= 0;
+    const redirectGeneratedToday = gameState.quests?.redirectGeneratedDate === today;
+
+    // Quêtes de changement de forme en cours
+    const formChangeQuests = (gameState.quests?.formChange || []);
+    const formChangeDone = formChangeQuests.filter(q => completedIds.includes(q.id)).length;
+    const formChangeTotal = formChangeQuests.length;
+    const formChangeHtml = formChangeTotal > 0 ? `
+        <div class="camp-q-section-label" style="margin-top:12px">
+            🔀 Changement de forme — ${formChangeDone}/${formChangeTotal} quêtes
+            <span style="margin-left:auto;font-size:0.65rem;color:var(--text-dim)">${BRANCH_CONFIG[targetBranch]?.label || ''}</span>
+        </div>
+        <div class="quest-prog-bg" style="margin:4px 0 8px"><div class="quest-prog-fill" style="width:${Math.round(formChangeDone/formChangeTotal*100)}%;background:${BRANCH_CONFIG[targetBranch]?.color||'#fff'}"></div></div>
+        <div class="quests-list">${formChangeQuests.map(q => renderCard(q)).join('')}</div>
+    ` : '';
+
+    const VALID_BRANCHES = ['constitution','instinct','vigueur','serenite','agilite'];
+
+    let redirectHtml = '';
+
+    if (targetBranch && !redirectExpired) {
+        // ── Voie choisie — vue condensée ──
+        const tbCfg = BRANCH_CONFIG[targetBranch] || BRANCH_CONFIG[targetBranch === 'balanced' ? 'balanced' : 'none'];
+        const isBalancedTarget = targetBranch === 'balanced';
+        redirectHtml = `
+            <div class="camp-q-section-label" style="margin-top:12px">
+                🧭 Voie choisie : <span style="color:${tbCfg.color}">${tbCfg.label}</span>
+                ${redirectDaysLeft !== null ? `<span style="margin-left:auto;font-size:0.65rem;color:var(--text-dim)">⏳ ${redirectDaysLeft.toFixed(1)}j restants</span>` : ''}
+                <button style="background:none;border:none;color:var(--text-dim);font-size:0.7rem;cursor:pointer;margin-left:8px;" onclick="setTargetBranch(null)">✕ Changer</button>
+            </div>
+            ${redirectGeneratedToday
+                ? `<p style="color:var(--text-dim);font-size:0.75rem;margin:4px 0">✅ Quêtes générées aujourd'hui — reviens demain.</p>`
+                : `<button class="btn-gold" style="width:100%;font-size:0.8rem" onclick="generateRedirectQuests()">
+                    ⚡ Générer quêtes${isBalancedTarget ? ' d\'équilibre' : ` vers ${tbCfg.label}`}
+                   </button>`
+            }
+            ${(stage >= 3 && !isBalancedTarget && formChangeTotal === 0) ? `
+                <button class="btn-ghost" style="width:100%;font-size:0.78rem;margin-top:6px" onclick="generateFormChangeQuests()">
+                    🔥 Lancer le changement de forme (${getFormChangeQuestCount(stage)} quêtes)
+                </button>` : ''}
+            ${formChangeHtml}`;
+
+    } else if (redirectExpired) {
+        // ── Fenêtre expirée ──
+        redirectHtml = `
+            <div class="camp-q-section-label" style="margin-top:12px">🧭 Rediriger mon évolution</div>
+            <p style="color:var(--gold);font-size:0.75rem">⏳ Fenêtre expirée — choisis une nouvelle voie pour recommencer.</p>
+            <div class="redirect-branch-grid">
+                ${[...VALID_BRANCHES, 'balanced'].map(key => {
+                    const cfg = BRANCH_CONFIG[key];
+                    return `<button class="redirect-branch-btn" style="--branch-color:${cfg.color}" onclick="setTargetBranch('${key}')">${cfg.label}</button>`;
+                }).join('')}
+            </div>`;
+
+    } else {
+        // ── Pas de voie choisie — grille complète ──
+        redirectHtml = `
+            <div class="camp-q-section-label" style="margin-top:12px">🧭 Choisir sa voie</div>
+            <p style="color:var(--text-dim);font-size:0.78rem;margin:0 0 8px;line-height:1.5">
+                ${dir?.status === 'confirmed'
+                    ? `Ton compagnon s'oriente vers <strong style="color:${dir.color}">${dir.label}</strong>.`
+                    : dir?.status === 'alert'
+                    ? `Tendance vers <strong style="color:${dir.color}">${dir.label}</strong>.`
+                    : 'Ton compagnon est équilibré.'}
+                Choisis une voie et génère des quêtes dédiées (1×/jour, fenêtre 4 jours).
+            </p>
+            <div class="redirect-branch-grid">
+                ${[...VALID_BRANCHES, 'balanced'].map(key => {
+                    const cfg = BRANCH_CONFIG[key];
+                    const isCurrent = currentBranch === key;
+                    return `<button class="redirect-branch-btn ${isCurrent ? 'active' : ''}"
+                        style="--branch-color:${cfg.color}"
+                        onclick="setTargetBranch('${key}')">
+                        ${cfg.label}${isCurrent ? ' 🐾' : ''}
+                    </button>`;
+                }).join('')}
+            </div>`;
+    }
+
     return `<div class="camp-quetes-wrap">
+        ${balancedHtml}
         <div class="camp-q-section-label">Quotidiennes ${activeBoss?`<span class="camp-q-boss-badge">60% orientées ${activeBoss.name}</span>`:''}</div>
         <div class="quests-list">${(gameState.quests.daily||[]).map(q=>renderCard(q)).join('')}</div>
         <div class="camp-q-section-label" style="margin-top:8px">Hebdomadaires <span style="margin-left:auto;font-size:0.65rem;color:var(--text-dim)">${(gameState.quests.weeklyArr||[gameState.quests.weekly]).filter(Boolean).length} cette semaine · reset lundi</span></div>
         <div class="quests-list">${(gameState.quests.weeklyArr||[gameState.quests.weekly]).filter(Boolean).map(q=>renderCard(q,true)).join('')}</div>
+        ${redirectHtml}
     </div>`;
 }
 
@@ -6869,21 +7059,71 @@ function computeCreatureStage() {
     for (const t of CREATURE_STAGE_THRESHOLDS) {
         if (xp >= t.xp) stage = t.stage;
     }
+    // Stade 3+ nécessite d'avoir battu tous les boss de l'acte 2
+    if (stage >= 3 && !hasBeatenAllAct(2)) stage = 2;
+    // Stade 4 nécessite d'avoir battu tous les boss de l'acte 3
+    if (stage >= 4 && !hasBeatenAllAct(3)) stage = 3;
     return stage;
+}
+
+// Vérifie si tous les boss d'un acte ont été vaincus
+function hasBeatenAllAct(act) {
+    const c = gameState.campaign;
+    if (!c?.bossDefeated) return false;
+    const actBosses = BOSS_DATA.filter(b => b.act === act && !b.conditionBased);
+    return actBosses.every(b => c.bossDefeated.includes(b.id));
 }
 
 function computeCreatureBranch() {
     const skills = gameState.skills;
     const total = Object.values(skills).reduce((s, sk) => s + sk.totalXP, 0);
-    if (total === 0) return 'balanced';
+    if (total === 0) return 'none';
     const pcts = {};
     Object.entries(skills).forEach(([k, v]) => { pcts[k] = v.totalXP / total; });
     const maxPct = Math.max(...Object.values(pcts));
     const dominant = Object.entries(pcts).find(([, v]) => v === maxPct)[0];
-    // Équilibré si aucune compétence ne dépasse 22%
-    if (maxPct <= 0.22) return 'balanced';
+
+    if (maxPct <= 0.23) {
+        // Forme équilibrée confirmée (défi réussi)
+        if (gameState.creature?.balancedConfirmed) return 'balanced';
+        // Défi activé (7j pour battre boss légendaire)
+        if (gameState.creature?.balancedChallengeStart) return 'balanced_challenge';
+        // Fenêtre d'activation ouverte (7j pour activer)
+        if (gameState.creature?.balancedWindowStart) return 'balanced_pending';
+        // Vient d'atteindre l'équilibre — fenêtre s'ouvre
+        return 'balanced_pending';
+    }
     return { constitution:'constitution', vigueur:'vigueur',
-             serenite:'serenite', instinct:'instinct', agilite:'agilite' }[dominant] || 'balanced';
+             serenite:'serenite', instinct:'instinct', agilite:'agilite' }[dominant] || 'none';
+}
+
+// Retourne l'info de direction pour affichage
+function getDirectionInfo() {
+    const skills = gameState.skills;
+    const total = Object.values(skills).reduce((s, sk) => s + sk.totalXP, 0);
+    if (total === 0) return null;
+    const pcts = {};
+    Object.entries(skills).forEach(([k, v]) => { pcts[k] = v.totalXP / total; });
+    const sorted = Object.entries(pcts).sort((a, b) => b[1] - a[1]);
+    const [topKey, topPct] = sorted[0];
+    const cfg = BRANCH_CONFIG[topKey] || BRANCH_CONFIG.balanced;
+    if (topPct >= 0.23) return {
+        status: 'confirmed', branch: topKey, pct: topPct,
+        label: `${cfg.label} — voie confirmée`, color: cfg.color
+    };
+    if (topPct >= 0.20) return {
+        status: 'alert', branch: topKey, pct: topPct,
+        label: `Tendance ${cfg.label}`, color: '#f5c842'
+    };
+    return { status: 'balanced', branch: 'balanced', pct: topPct,
+        label: '✦ Équilibré', color: '#ffffff' };
+}
+
+// Nombre de quêtes pour changer de forme selon le stade
+function getFormChangeQuestCount(stage) {
+    if (stage <= 2) return 3;
+    if (stage === 3) return 7;
+    return 14; // stage 4
 }
 
 function getCreatureState() {
@@ -6922,13 +7162,318 @@ function creatureSVG() {
     return creatureCard(stage, branch, state);
 }
 const BRANCH_CONFIG = {
-    balanced:     { color: '#ffffff', glow: 'rgba(255,255,255,0.5)', label: '✦ Équilibré',   holo: true  },
+    balanced:          { color: '#ffffff', glow: 'rgba(255,255,255,0.5)', label: '✦ Équilibré',            holo: true  },
+    balanced_pending:  { color: '#f5c842', glow: 'rgba(245,200,66,0.4)',  label: '⏳ Équilibre — à activer', holo: false },
+    balanced_challenge:{ color: '#4ecdc4', glow: 'rgba(78,205,196,0.5)',  label: '⚔️ Défi Équilibré en cours', holo: false },
     constitution: { color: '#f5a623', glow: 'rgba(245,166,35,0.5)',  label: '🦴 Constitution', holo: false },
     instinct:     { color: '#4ecdc4', glow: 'rgba(78,205,196,0.5)',  label: '🌙 Instinct',     holo: false },
     vigueur:      { color: '#ff6b35', glow: 'rgba(255,107,53,0.5)',  label: '🔥 Vigueur',      holo: false },
     serenite:     { color: '#9f7aea', glow: 'rgba(159,122,234,0.5)', label: '🧘 Sérénité',     holo: false },
     agilite:      { color: '#3d8ef0', glow: 'rgba(61,142,240,0.5)',  label: '⚡ Agilité',      holo: false },
+    none:         { color: '#555',    glow: 'rgba(85,85,85,0.3)',    label: '— En devenir',    holo: false },
 };
+
+// ── REDIRECTION ÉVOLUTION ─────────────────────────────────
+
+// ── SYSTÈME ÉQUILIBRE ─────────────────────────────────────
+
+// Détecte quand le joueur atteint l'équilibre et ouvre la fenêtre de 7j
+function checkBalanceWindow() {
+    const c = gameState.creature;
+    if (!c) return;
+    if (c.balancedConfirmed) return; // déjà obtenu
+    const skills = gameState.skills;
+    const total = Object.values(skills).reduce((s, sk) => s + sk.totalXP, 0);
+    if (total === 0) return;
+    const maxPct = Math.max(...Object.values(skills).map(s => s.totalXP / total));
+    const isBalanced = maxPct <= 0.23;
+    if (isBalanced && !c.balancedWindowStart) {
+        c.balancedWindowStart = getNow().toISOString();
+        saveGameState();
+        toast('⚖️ Ton compagnon est équilibré — tu as 7 jours pour activer le Défi Équilibré !', 'success');
+    } else if (!isBalanced && c.balancedWindowStart && !c.balancedChallengeStart) {
+        // A perdu l'équilibre avant d'activer
+        c.balancedWindowStart = null;
+        saveGameState();
+    }
+}
+
+// Calcule les quêtes nécessaires pour atteindre l'équilibre réel
+function calculateBalanceQuests() {
+    const skills = gameState.skills;
+    const total = Object.values(skills).reduce((s, sk) => s + sk.totalXP, 0);
+    if (total === 0) return [];
+    const dominant = Object.entries(skills).reduce((a, b) => a[1].totalXP > b[1].totalXP ? a : b);
+    const dominantXP = dominant[1].totalXP;
+    // XP total nécessaire pour que le dominant soit à 23%
+    const targetTotal = Math.ceil(dominantXP / 0.23);
+    const xpNeeded = Math.max(0, targetTotal - total);
+    if (xpNeeded === 0) return []; // déjà équilibré
+    // Répartir l'XP manquant sur les skills les plus faibles
+    const underRep = Object.entries(skills)
+        .filter(([, v]) => v.totalXP / total < 0.23)
+        .sort((a, b) => a[1].totalXP - b[1].totalXP);
+    if (underRep.length === 0) return [];
+    const xpPerSkill = Math.ceil(xpNeeded / underRep.length);
+    const ts = Date.now();
+    return underRep.map(([key], i) => {
+        const cfg = SKILL_CONFIG[key];
+        const mins = Math.max(20, Math.ceil(xpPerSkill / 4)); // ~4 XP/min
+        return {
+            id: `balance_${key}_${ts + i}`,
+            title: `Équilibre — ${cfg.name}`,
+            desc: `Session ${cfg.name} de ${mins}+ min pour équilibrer ton compagnon`,
+            type: 'session_range', skill: key,
+            minMins: mins, maxMins: 9999,
+            xp: xpPerSkill
+        };
+    });
+}
+
+// Vérifie si la fenêtre d'activation est encore ouverte
+function isBalancedWindowOpen() {
+    const c = gameState.creature;
+    if (!c?.balancedWindowStart) return false;
+    const daysSince = (getNow() - new Date(c.balancedWindowStart)) / 86400000;
+    return daysSince <= 7;
+}
+
+// Vérifie si le défi est encore actif
+function isBalancedChallengeActive() {
+    const c = gameState.creature;
+    if (!c?.balancedChallengeStart) return false;
+    const daysSince = (getNow() - new Date(c.balancedChallengeStart)) / 86400000;
+    return daysSince <= 7;
+}
+
+// Activation du défi (avec popup S3 pour choisir les boss)
+function activateBalancedChallenge() {
+    const c = gameState.creature;
+    if (!c) return;
+    if (!isBalancedWindowOpen()) { toast('⏳ La fenêtre d\'activation est expirée.', 'info'); return; }
+    const stage = computeCreatureStage(); // stade réel (avec contrainte acte 2)
+    if (stage >= 3) {
+        // Popup choix acte
+        showModal({
+            title: '⚖️ Choisis ton Épreuve Équilibrée',
+            body: `Pour obtenir la forme Équilibrée au stade ${stage}, choisis ton défi :<br><br>
+                <strong>Acte 2</strong> — Bat les 3 boss de l'Acte 2 en Légendaire<br>
+                <small style="color:var(--text-dim)">(Loup Alpha, Reine des Guêpes, Géant de Pierre)</small><br><br>
+                <strong>Acte 3</strong> — Bat les 3 boss de l'Acte 3 en Légendaire<br>
+                <small style="color:var(--text-dim)">(Chevalier Maudit, Sorcière des Cendres, Seigneur de Guerre)</small>`,
+            confirmLabel: '⚔️ Choisir Acte 2',
+            cancelLabel:  '⚔️ Choisir Acte 3',
+            onConfirm: () => doActivateBalancedChallenge('act2'),
+            onCancel:  () => doActivateBalancedChallenge('act3'),
+        });
+    } else {
+        // Stade 1-2 : un seul boss légendaire suffit
+        doActivateBalancedChallenge(null);
+    }
+}
+
+function doActivateBalancedChallenge(s3Choice) {
+    const c = gameState.creature;
+    c.balancedChallengeStart = getNow().toISOString();
+    c.legendaryLock = true; // prochain boss forcé en légendaire
+    if (s3Choice) c.balancedS3Choice = s3Choice;
+    c.balancedS3Progress = [];
+    saveGameState();
+    renderCampagneContent();
+    toast('⚔️ Défi activé ! Ton prochain boss sera forcé en Légendaire.', 'success');
+}
+
+// Vérifie la complétion du défi après victoire boss
+function checkBalancedChallengeProgress(boss, difficulty) {
+    const c = gameState.creature;
+    if (!c?.legendaryLock) return;
+    if (difficulty !== 'legendaire') return;
+    if (!isBalancedChallengeActive()) {
+        // Délai expiré
+        c.legendaryLock = false;
+        c.balancedChallengeStart = null;
+        c.balancedWindowStart = null;
+        saveGameState();
+        toast('⏳ Le défi Équilibré a expiré.', 'info');
+        return;
+    }
+    const stage = computeCreatureStage();
+    if (stage >= 3 && c.balancedS3Choice) {
+        // Doit battre tous les boss de l'acte choisi
+        const actBossIds = { act2: ['b04','b05','b06'], act3: ['b07','b08','b09'] };
+        const required = actBossIds[c.balancedS3Choice] || [];
+        if (!c.balancedS3Progress) c.balancedS3Progress = [];
+        if (!c.balancedS3Progress.includes(boss.id)) c.balancedS3Progress.push(boss.id);
+        const done = required.filter(id => c.balancedS3Progress.includes(id)).length;
+        if (done >= required.length) {
+            unlockBalancedForm();
+        } else {
+            toast(`⚖️ ${done}/${required.length} boss légendaires pour la forme Équilibrée !`, 'success');
+        }
+    } else {
+        // Stage 1-2 : un seul boss légendaire suffit
+        unlockBalancedForm();
+    }
+}
+
+function unlockBalancedForm() {
+    const c = gameState.creature;
+    c.balancedConfirmed = true;
+    c.legendaryLock = false;
+    c.balancedChallengeStart = null;
+    c.balancedWindowStart = null;
+    saveGameState();
+    showModal({
+        type: 'success',
+        title: '⚖️ Forme Équilibrée débloquée !',
+        body: 'Ton compagnon a prouvé sa maîtrise de toutes les voies.<br><br>La forme la plus rare est désormais la tienne — <strong style="color:#fff">Équilibré</strong>, maître de toutes les aptitudes.',
+        confirmLabel: 'Voir mon compagnon',
+        onConfirm: () => { switchTab('habits'); renderUI(); }
+    });
+}
+
+// Force la difficulté légendaire si legendaryLock actif
+function applyLegendaryLockIfNeeded() {
+    const c = gameState.campaign;
+    const cr = gameState.creature;
+    if (!c || !cr?.legendaryLock) return;
+    if (!isBalancedChallengeActive()) {
+        cr.legendaryLock = false;
+        cr.balancedChallengeStart = null;
+        saveGameState();
+        return;
+    }
+    c.difficulty = 'legendaire';
+}
+
+function setTargetBranch(branch) {
+    if (!gameState.creature) return;
+    const cr = gameState.creature;
+    // Reset la fenêtre si on change de voie
+    if (branch !== cr.targetBranch) {
+        cr.redirectWindowStart = null;
+        if (gameState.quests) {
+            gameState.quests.daily = (gameState.quests.daily || []).filter(q => !q.id?.startsWith('redir_'));
+            gameState.quests.redirectGeneratedDate = null;
+        }
+    }
+    cr.targetBranch = branch || null;
+    saveGameState();
+    renderCampagneContent();
+}
+
+function generateRedirectQuests() {
+    const branch = gameState.creature?.targetBranch;
+    if (!branch) return;
+    const validBranches = ['constitution','instinct','vigueur','serenite','agilite','balanced'];
+    if (!validBranches.includes(branch)) {
+        toast('⚠️ Choisis d\'abord une voie valide.', 'error');
+        return;
+    }
+    const today = getLocalDateStr(getNow());
+    const cr = gameState.creature;
+
+    // Vérifier la fenêtre de 4 jours
+    if (!cr.redirectWindowStart) {
+        cr.redirectWindowStart = getNow().toISOString();
+    } else {
+        const daysElapsed = (getNow() - new Date(cr.redirectWindowStart)) / 86400000;
+        if (daysElapsed > 4) {
+            toast('⏳ Fenêtre expirée. Choisis une nouvelle voie.', 'info');
+            cr.redirectWindowStart = null;
+            cr.targetBranch = null;
+            saveGameState();
+            renderCampagneContent();
+            return;
+        }
+    }
+
+    // Vérifier si déjà généré aujourd'hui
+    if (gameState.quests?.redirectGeneratedDate === today) {
+        toast('⏳ Quêtes déjà générées aujourd\'hui. Reviens demain.', 'info');
+        return;
+    }
+
+    const ts = Date.now();
+    let newQuests;
+
+    if (branch === 'balanced') {
+        // Calculer les quêtes pour rééquilibrer
+        const bqJobs = calculateBalanceQuests();
+        if (bqJobs.length === 0) {
+            toast('✅ Ton compagnon est déjà équilibré — active le Défi !', 'success');
+            return;
+        }
+        newQuests = bqJobs.map((q, i) => ({
+            id: `redir_balanced_${i}_${ts+i}`,
+            title: `Équilibre — ${SKILL_CONFIG[q.skill]?.name}`,
+            desc: `${SKILL_CONFIG[q.skill]?.icon} Session de ${Math.ceil(q.xp/4)}+ min pour équilibrer`,
+            type: 'session_range', skill: q.skill,
+            minMins: Math.ceil(q.xp/4), maxMins: 9999,
+            xp: q.xp
+        }));
+    } else {
+        const cfg = BRANCH_CONFIG[branch];
+        newQuests = [
+            { id:`redir_${branch}_1_${ts}`,   title:`${cfg.label} I`,   desc:`Session de 30+ min`, type:'session_range', skill:branch, minMins:30,  maxMins:9999, xp:180 },
+            { id:`redir_${branch}_2_${ts+1}`, title:`${cfg.label} II`,  desc:`Session de 45+ min`, type:'session_range', skill:branch, minMins:45,  maxMins:9999, xp:180 },
+            { id:`redir_${branch}_3_${ts+2}`, title:`${cfg.label} III`, desc:`Session de 60+ min`, type:'session_range', skill:branch, minMins:60,  maxMins:9999, xp:180 },
+        ];
+    }
+
+    if (!gameState.quests) gameState.quests = { daily:[], completedIds:[] };
+    gameState.quests.daily = (gameState.quests.daily || []).filter(q => !q.id?.startsWith('redir_'));
+    gameState.quests.daily.push(...newQuests);
+    gameState.quests.redirectGeneratedDate = today;
+    saveGameState();
+    renderCampagneContent();
+
+    const daysLeft = Math.max(0, 4 - (getNow() - new Date(cr.redirectWindowStart)) / 86400000).toFixed(1);
+    toast(`⚡ ${newQuests.length} quêtes ajoutées (${daysLeft}j restants) !`, 'success');
+}
+
+function generateFormChangeQuests() {
+    const branch = gameState.creature?.targetBranch;
+    if (!branch) return;
+    const stage = computeCreatureStage();
+    const count = getFormChangeQuestCount(stage);
+    const cfg = BRANCH_CONFIG[branch];
+    const xpPerQuest = stage >= 4 ? 350 : stage === 3 ? 280 : 200;
+    const ts = Date.now();
+    const quests = Array.from({ length: count }, (_, i) => ({
+        id: `form_${branch}_${i}_${ts}`,
+        title: `Métamorphose ${cfg.label} ${i+1}/${count}`,
+        desc: `Session ${cfg.label} de ${40 + i*5}+ min`,
+        type: 'session_range', skill: branch,
+        minMins: 40 + i*5, maxMins: 9999, xp: xpPerQuest
+    }));
+    if (!gameState.quests) gameState.quests = { daily:[], completedIds:[] };
+    gameState.quests.formChange = quests;
+    saveGameState();
+    renderCampagneContent();
+    toast(`🔥 ${count} quêtes de métamorphose lancées !`, 'success');
+}
+
+function checkFormChangeCompletion() {
+    const fc = gameState.quests?.formChange;
+    if (!fc || fc.length === 0) return;
+    const done = fc.filter(q => (gameState.quests.completedIds||[]).includes(q.id)).length;
+    if (done >= fc.length && gameState.creature?.targetBranch) {
+        const newBranch = gameState.creature.targetBranch;
+        const cfg = BRANCH_CONFIG[newBranch];
+        gameState.creature.branch = newBranch;
+        gameState.creature.targetBranch = null;
+        gameState.quests.formChange = [];
+        saveGameState();
+        showModal({
+            type: 'success',
+            title: '🐾 Métamorphose accomplie !',
+            body: `Ton compagnon a embrassé la voie <strong style="color:${cfg.color}">${cfg.label}</strong>.<br><br>Sa forme a changé. Il est devenu ce que tu as choisi.`,
+            confirmLabel: 'Voir mon compagnon',
+            onConfirm: () => { switchTab('habits'); }
+        });
+    }
+}
 
 function getCreatureCardPath(stage, branch) {
     if (stage === 1) return 'images/creature/wolf/wolf_s1.jpg';
