@@ -196,59 +196,58 @@ const RECOMMENDED_HABITS = [
 const QUEST_POOLS = {
     daily: {
         vigueur: [
-            { id:'d_disc_1', title:'Démarrage du jour',   desc:'Coche 50% de tes habitudes perso (arrondi supérieur)', type:'habits_personal_pct', target:0.5,  xp:30  },
-            { id:'d_disc_2', title:'Hygiène de vie',      desc:'Coche 70% de tes habitudes recommandées (arrondi supérieur)', type:'habits_reco_pct', target:0.7, xp:30 },
-            { id:'d_disc_3', title:'Journée parfaite',    desc:'Coche au moins 8 habitudes (recommandées + perso)', type:'habits_total_min', target:8, xp:150, minHabits:8, requiresPersonal:true },
-            { id:'d_disc_4', title:'Sans faute',          desc:'Aucune habitude recommandée manquée aujourd\'hui', type:'habits_reco_all', target:1, xp:60 },
-            { id:'d_disc_5', title:'Constance absolue',   desc:'Maintiens le streak sur au moins 1 habitude', type:'habit_any_streak', target:1, xp:30 }
+            { id:'d_vig_1', title:'Démarrage du jour',   desc:'Coche 50% de tes habitudes perso (arrondi supérieur)', type:'habits_personal_pct', target:0.5,  xp:30  },
+            { id:'d_vig_2', title:'Hygiène de vie',      desc:'Coche 70% de tes habitudes recommandées (arrondi supérieur)', type:'habits_reco_pct', target:0.7, xp:30 },
+            { id:'d_vig_3', title:'Journée parfaite',    desc:'Coche au moins 8 habitudes (recommandées + perso)', type:'habits_total_min', target:8, xp:150, minHabits:8, requiresPersonal:true },
+            { id:'d_vig_4', title:'Sans faute',          desc:'Aucune habitude recommandée manquée aujourd\'hui', type:'habits_reco_all', target:1, xp:60 },
+            { id:'d_vig_5', title:'Constance absolue',   desc:'Maintiens le streak sur au moins 1 habitude', type:'habit_any_streak', target:1, xp:30 }
         ],
         constitution: [
-            { id:'d_end_1', title:'Mise en jambes',  desc:'Log une session Constitution de 20–44 min', type:'session_range', skill:'constitution', minMins:20, maxMins:44, xp:60  },
-            { id:'d_end_2', title:'Séance solide',   desc:'Log une session Constitution de 45–74 min', type:'session_range', skill:'constitution', minMins:45, maxMins:74, xp:90  },
-            { id:'d_end_3', title:'Effort long',     desc:'Log une session Constitution de 75 min+',   type:'session_range', skill:'constitution', minMins:75, maxMins:9999, xp:120 }
+            { id:'d_con_1', title:'Mise en jambes',  desc:'Log une session Constitution de 20–44 min', type:'session_range', skill:'constitution', minMins:20, maxMins:44, xp:60  },
+            { id:'d_con_2', title:'Séance solide',   desc:'Log une session Constitution de 45–74 min', type:'session_range', skill:'constitution', minMins:45, maxMins:74, xp:90  },
+            { id:'d_con_3', title:'Effort long',     desc:'Log une session Constitution de 75 min+',   type:'session_range', skill:'constitution', minMins:75, maxMins:9999, xp:120 }
         ],
         instinct: [
-            { id:'d_sag_1', title:'Lecteur du matin', desc:'Log 15–29 min de lecture ou apprentissage', type:'session_range', skill:'instinct', minMins:15, maxMins:29, xp:60  },
-            { id:'d_sag_2', title:'Session de savoir', desc:'Log 30–59 min de lecture ou cours',         type:'session_range', skill:'instinct', minMins:30, maxMins:59, xp:90  },
-            { id:'d_sag_3', title:'Apprentissage profond', desc:'Log 60 min+ de lecture ou cours en ligne', type:'session_range', skill:'instinct', minMins:60, maxMins:9999, xp:120 }
+            { id:'d_ins_1', title:'Lecteur du matin',     desc:'Log 15–29 min de lecture ou apprentissage', type:'session_range', skill:'instinct', minMins:15, maxMins:29, xp:60  },
+            { id:'d_ins_2', title:'Session de savoir',    desc:'Log 30–59 min de lecture ou cours',         type:'session_range', skill:'instinct', minMins:30, maxMins:59, xp:90  },
+            { id:'d_ins_3', title:'Apprentissage profond',desc:'Log 60 min+ de lecture ou cours en ligne',  type:'session_range', skill:'instinct', minMins:60, maxMins:9999, xp:120 }
         ],
         serenite: [
-            { id:'d_ser_1', title:'Instant calme',   desc:'Log 10–19 min de méditation ou respiration', type:'session_range', skill:'serenite', minMins:10, maxMins:19, xp:60  },
-            { id:'d_ser_2', title:'Pleine présence', desc:'Log 20–44 min de méditation ou journal',     type:'session_range', skill:'serenite', minMins:20, maxMins:44, xp:90  },
-            { id:'d_ser_3', title:'Sérénité totale', desc:'Log 45 min+ de méditation ou marche en nature', type:'session_range', skill:'serenite', minMins:45, maxMins:9999, xp:120 }
+            { id:'d_ser_1', title:'Instant calme',   desc:'Log 10–19 min de méditation ou respiration',      type:'session_range', skill:'serenite', minMins:10, maxMins:19, xp:60  },
+            { id:'d_ser_2', title:'Pleine présence', desc:'Log 20–44 min de méditation ou journal',          type:'session_range', skill:'serenite', minMins:20, maxMins:44, xp:90  },
+            { id:'d_ser_3', title:'Sérénité totale', desc:'Log 45 min+ de méditation ou marche en nature',   type:'session_range', skill:'serenite', minMins:45, maxMins:9999, xp:120 }
         ],
         agilite: [
-            { id:'d_mai_1', title:'1 Pomodoro',       desc:'Log 25–44 min de deep work (1 Pomodoro)',  type:'session_range', skill:'agilite', minMins:25, maxMins:44, xp:60  },
-            { id:'d_mai_2', title:'Session de flow',  desc:'Log 45–74 min de deep work concentré',     type:'session_range', skill:'agilite', minMins:45, maxMins:74, xp:90  },
-            { id:'d_mai_3', title:'Maîtrise totale',  desc:'Log 75 min+ de deep work',                 type:'session_range', skill:'agilite', minMins:75, maxMins:9999, xp:120 }
+            { id:'d_agi_1', title:'1 Pomodoro',      desc:'Log 25–44 min de deep work (1 Pomodoro)',  type:'session_range', skill:'agilite', minMins:25, maxMins:44, xp:60  },
+            { id:'d_agi_2', title:'Session de flow', desc:'Log 45–74 min de deep work concentré',     type:'session_range', skill:'agilite', minMins:45, maxMins:74, xp:90  },
+            { id:'d_agi_3', title:'Agilité totale',  desc:'Log 75 min+ de deep work concentré',       type:'session_range', skill:'agilite', minMins:75, maxMins:9999, xp:120 }
         ]
     },
     weekly: {
         constitution: [
-            { id:'w_end_1', title:'Semaine Constitution', desc:'Log 2 sessions Constitution de 45 min minimum cette semaine', type:'week_sessions_min', skill:'constitution', count:2, minMins:45, xp:250 }
+            { id:'w_con_1', title:'Semaine Constitution', desc:'Log 2 sessions Constitution de 45 min minimum cette semaine', type:'week_sessions_min', skill:'constitution', count:2, minMins:45, xp:250 }
         ],
         instinct: [
-            { id:'w_sag_1', title:'Semaine Instinct',  desc:'Log 3 sessions Instinct cette semaine',  type:'week_sessions_count', skill:'instinct', count:3, xp:250 }
+            { id:'w_ins_1', title:'Semaine Instinct', desc:'Log 3 sessions Instinct cette semaine', type:'week_sessions_count', skill:'instinct', count:3, xp:250 }
         ],
         serenite: [
-            { id:'w_ser_1', title:'Semaine sereine',    desc:'Log 4 sessions Sérénité cette semaine (fréquence > durée)', type:'week_sessions_count', skill:'serenite', count:4, xp:250 }
+            { id:'w_ser_1', title:'Semaine Sérénité', desc:'Log 4 sessions Sérénité cette semaine (fréquence > durée)', type:'week_sessions_count', skill:'serenite', count:4, xp:250 }
         ],
         agilite: [
-            { id:'w_mai_1', title:'Semaine Agilité', desc:'Log 2 sessions Agilité consécutives cette semaine', type:'week_sessions_min', skill:'agilite', count:2, minMins:45, xp:250 }
+            { id:'w_agi_1', title:'Semaine Agilité', desc:'Log 2 sessions Agilité de 45 min minimum cette semaine', type:'week_sessions_min', skill:'agilite', count:2, minMins:45, xp:250 }
         ],
         vigueur: [
-            { id:'w_disc_1', title:'Semaine Vigueur', desc:'Complète toutes tes habitudes recommandées 3 jours cette semaine', type:'week_reco_days', count:3, xp:300 }
+            { id:'w_vig_1', title:'Semaine Vigueur', desc:'Complète toutes tes habitudes recommandées 3 jours cette semaine', type:'week_reco_days', count:3, xp:300 }
         ]
     }
 };
 
-// Quest XP goes to skill (or discipline for habit quests)
 const QUEST_SKILL_MAP = {
-    discipline: 'vigueur',
-    endurance:  'constitution',
-    sagesse:    'instinct',
-    serenite:   'serenite',
-    maitrise:   'agilite'
+    vigueur:      'vigueur',
+    constitution: 'constitution',
+    instinct:     'instinct',
+    serenite:     'serenite',
+    agilite:      'agilite'
 };
 
 // ─────────────────────────────────────────────
@@ -774,6 +773,14 @@ function saveGameState() {
 // so old backups always get every migration. Add any future migration HERE only.
 function migrateGameState() {
     if (!gameState) return;
+    // V3.1 — Forcer régénération si quêtes avec anciens IDs (d_disc_, d_end_, d_sag_, d_mai_, w_end_, etc.)
+    const oldPrefixes = ['d_disc_','d_end_','d_sag_','d_mai_','w_end_','w_sag_','w_mai_','w_disc_'];
+    const hasOldQuests = [...(gameState.quests?.daily||[]), ...(gameState.quests?.weeklyArr||[])]
+        .some(q => q && oldPrefixes.some(p => q.id?.startsWith(p)));
+    if (hasOldQuests) {
+        gameState.quests = null; // régénération complète au prochain render
+    }
+
     // V3.1 — Nettoyer les quêtes avec skills invalides
     const validSkills = ['constitution','instinct','vigueur','serenite','agilite'];
     if (gameState.quests?.daily) {
@@ -4410,7 +4417,10 @@ function buildQuetesTabCamp() {
         const bqHtml = bqJobs.length > 0
             ? `<div class="balance-challenge-req" style="margin-bottom:8px">
                 📊 Pour atteindre l'équilibre, tu dois :<br>
-                ${bqJobs.map(q => `— ${Math.ceil(q.xp/4)}+ min de ${SKILL_CONFIG[q.skill]?.icon} ${SKILL_CONFIG[q.skill]?.name}`).join('<br>')}
+                ${bqJobs.map(q => q.skill === 'vigueur'
+                    ? `— Habitudes : ${q.title}`
+                    : `— ${Math.ceil(q.xp/4)}+ min de ${SKILL_CONFIG[q.skill]?.icon} ${SKILL_CONFIG[q.skill]?.name}`
+                ).join('<br>')}
                </div>`
             : `<div class="balance-challenge-req" style="border-color:rgba(78,205,196,0.5);color:#4ecdc4">✅ Ton compagnon est déjà équilibré !</div>`;
         const act2Done = hasBeatenAllAct(2);
@@ -7217,11 +7227,9 @@ function calculateBalanceQuests() {
     if (total === 0) return [];
     const dominant = Object.entries(skills).reduce((a, b) => a[1].totalXP > b[1].totalXP ? a : b);
     const dominantXP = dominant[1].totalXP;
-    // XP total nécessaire pour que le dominant soit à 23%
     const targetTotal = Math.ceil(dominantXP / 0.23);
     const xpNeeded = Math.max(0, targetTotal - total);
-    if (xpNeeded === 0) return []; // déjà équilibré
-    // Répartir l'XP manquant sur les skills les plus faibles
+    if (xpNeeded === 0) return [];
     const underRep = Object.entries(skills)
         .filter(([, v]) => v.totalXP / total < 0.23)
         .sort((a, b) => a[1].totalXP - b[1].totalXP);
@@ -7230,11 +7238,17 @@ function calculateBalanceQuests() {
     const ts = Date.now();
     return underRep.map(([key], i) => {
         const cfg = SKILL_CONFIG[key];
-        const mins = Math.max(20, Math.ceil(xpPerSkill / 4)); // ~4 XP/min
+        if (key === 'vigueur') {
+            // Vigueur = habitudes → pioche dans le pool quotidien
+            const pool = QUEST_POOLS.daily.vigueur;
+            const base = pool[i % pool.length];
+            return { ...base, id: `balance_vigueur_${i}_${ts+i}`, xp: xpPerSkill };
+        }
+        const mins = Math.max(20, Math.ceil(xpPerSkill / 4));
         return {
             id: `balance_${key}_${ts + i}`,
             title: `Équilibre — ${cfg.name}`,
-            desc: `Session ${cfg.name} de ${mins}+ min pour équilibrer ton compagnon`,
+            desc: `${cfg.icon} Session de ${mins}+ min`,
             type: 'session_range', skill: key,
             minMins: mins, maxMins: 9999,
             xp: xpPerSkill
@@ -7441,14 +7455,18 @@ function generateRedirectQuests() {
             toast('✅ Ton compagnon est déjà équilibré — active le Défi !', 'success');
             return;
         }
-        newQuests = bqJobs.map((q, i) => ({
-            id: `redir_balanced_${i}_${ts+i}`,
-            title: `Équilibre — ${SKILL_CONFIG[q.skill]?.name}`,
-            desc: `${SKILL_CONFIG[q.skill]?.icon} Session de ${Math.ceil(q.xp/4)}+ min pour équilibrer`,
-            type: 'session_range', skill: q.skill,
-            minMins: Math.ceil(q.xp/4), maxMins: 9999,
-            xp: q.xp
-        }));
+        newQuests = bqJobs.map((q, i) => {
+            // Vigueur déjà une quête d'habitudes depuis calculateBalanceQuests
+            if (q.type !== 'session_range') return { ...q, id: `redir_balanced_${i}_${ts+i}` };
+            return {
+                id: `redir_balanced_${i}_${ts+i}`,
+                title: `Équilibre — ${SKILL_CONFIG[q.skill]?.name}`,
+                desc: `${SKILL_CONFIG[q.skill]?.icon} Session de ${Math.ceil(q.xp/4)}+ min`,
+                type: 'session_range', skill: q.skill,
+                minMins: Math.ceil(q.xp/4), maxMins: 9999,
+                xp: q.xp
+            };
+        });
     } else {
         const cfg = BRANCH_CONFIG[branch];
         newQuests = [
