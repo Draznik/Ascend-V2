@@ -4463,6 +4463,17 @@ function buildQuetesTabCamp() {
 
     let redirectHtml = '';
 
+    // Bouton reset voie (visible si branche déjà confirmée par ancien système)
+    const hasLegacyBranch = gameState.creature?.branch &&
+        gameState.creature.branch !== 'balanced' &&
+        !gameState.creature.balancedConfirmed;
+    const resetBranchHtml = hasLegacyBranch ? `
+        <div style="text-align:right;margin-bottom:4px">
+            <button style="background:none;border:none;color:var(--text-dim);font-size:0.7rem;cursor:pointer;text-decoration:underline;" onclick="resetCreatureBranch()">
+                🔄 Réinitialiser ma voie (${BRANCH_CONFIG[gameState.creature.branch]?.label || gameState.creature.branch})
+            </button>
+        </div>` : '';
+
     if (targetBranch && !redirectExpired) {
         // ── Voie choisie — vue condensée ──
         const tbCfg = BRANCH_CONFIG[targetBranch] || BRANCH_CONFIG[targetBranch === 'balanced' ? 'balanced' : 'none'];
@@ -4524,6 +4535,7 @@ function buildQuetesTabCamp() {
 
     return `<div class="camp-quetes-wrap">
         ${balancedHtml}
+        ${resetBranchHtml}
         <div class="camp-q-section-label">Quotidiennes ${activeBoss?`<span class="camp-q-boss-badge">60% orientées ${activeBoss.name}</span>`:''}</div>
         <div class="quests-list">${(gameState.quests.daily||[]).map(q=>renderCard(q)).join('')}</div>
         <div class="camp-q-section-label" style="margin-top:8px">Hebdomadaires <span style="margin-left:auto;font-size:0.65rem;color:var(--text-dim)">${(gameState.quests.weeklyArr||[gameState.quests.weekly]).filter(Boolean).length} cette semaine · reset lundi</span></div>
@@ -7344,6 +7356,31 @@ function applyLegendaryLockIfNeeded() {
         return;
     }
     c.difficulty = 'legendaire';
+}
+
+function resetCreatureBranch() {
+    showModal({
+        type: 'danger',
+        title: '🔄 Réinitialiser ta voie ?',
+        body: `Ta voie actuelle (<strong>${BRANCH_CONFIG[gameState.creature?.branch]?.label || ''}</strong>) sera effacée.<br><br>
+            Ton XP et tes aptitudes restent intacts — seule la direction est réinitialisée.<br>
+            Tu pourras ensuite utiliser les quêtes de redirection pour choisir ta nouvelle voie.`,
+        confirmLabel: 'Réinitialiser',
+        cancelLabel:  'Annuler',
+        onConfirm: () => {
+            const c = gameState.creature;
+            c.branch = null;
+            c.targetBranch = null;
+            c.redirectWindowStart = null;
+            if (gameState.quests) {
+                gameState.quests.daily = (gameState.quests.daily || []).filter(q => !q.id?.startsWith('redir_'));
+                gameState.quests.redirectGeneratedDate = null;
+            }
+            saveGameState();
+            renderUI();
+            toast('🔄 Voie réinitialisée — choisis ta nouvelle direction dans les Quêtes.', 'success');
+        }
+    });
 }
 
 function setTargetBranch(branch) {
